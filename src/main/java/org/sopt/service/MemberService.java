@@ -1,12 +1,13 @@
-package or.sopt.service;
+package org.sopt.service;
 
-import or.sopt.domain.Member;
+import org.sopt.domain.Member;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface MemberService {
-    Long join(String name);
+    Long join(Member member);
     Optional<Member> findOne(Long memberId);
     List<Member> findAllMembers();
+    boolean deleteMember(Long memberId);
 }
