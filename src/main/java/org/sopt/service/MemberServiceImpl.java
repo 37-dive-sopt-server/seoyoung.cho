@@ -5,6 +5,7 @@ import org.sopt.dto.MemberCreateRequest;
 import org.sopt.exception.EntityNotFoundException;
 import org.sopt.repository.MemberRepository;
 import org.sopt.service.validator.MemberValidator;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +15,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final MemberValidator memberValidator;
 
-    public MemberServiceImpl(MemberRepository memberRepository, MemberValidator memberValidator) {
+    // 생성자 파라미터에서 @Qualifier로 fileRepo를 명시
+    public MemberServiceImpl(@Qualifier("fileRepo") MemberRepository memberRepository, MemberValidator memberValidator) {
         this.memberRepository = memberRepository;
         this.memberValidator = memberValidator;
     }

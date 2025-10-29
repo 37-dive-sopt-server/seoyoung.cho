@@ -4,6 +4,7 @@ import jakarta.annotation.PreDestroy;
 import org.sopt.service.component.IdGenerator;
 import org.sopt.domain.Member;
 import org.sopt.repository.storage.MemberFileStorage;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
+@Qualifier("fileRepo")
 public class FileMemberRepository implements MemberRepository {
 
     private final Map<Long, Member> store;
