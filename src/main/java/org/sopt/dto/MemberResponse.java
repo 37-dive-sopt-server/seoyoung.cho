@@ -2,12 +2,11 @@ package org.sopt.dto;
 
 import org.sopt.domain.Gender;
 import org.sopt.domain.Member;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
 public record MemberResponse(
-        Long id,
+        Long userId,
         String name,
         LocalDate birthdate,
         String email,

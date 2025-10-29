@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/users")
 public class MemberController {
 
     private final MemberService memberService;
@@ -32,9 +32,9 @@ public class MemberController {
                 .body(ApiResponse.success(HttpStatus.CREATED.value(), "✅ 회원 등록 성공", response));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<MemberResponse>> findMemberById(@PathVariable Long id) {
-        Member member = memberService.findOne(id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<MemberResponse>> findMemberById(@PathVariable Long userId) {
+        Member member = memberService.findOne(userId);
         MemberResponse response = MemberResponse.of(member);
 
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "✅ 회원 조회 성공", response));
@@ -49,9 +49,9 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "✅ 전체 회원 조회 성공", responses));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> deleteMember(@PathVariable Long id) {
-        memberService.deleteMember(id);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ApiResponse<?>> deleteMember(@PathVariable Long userId) {
+        memberService.deleteMember(userId);
 
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT) // 204
