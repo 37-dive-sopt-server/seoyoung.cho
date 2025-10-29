@@ -1,6 +1,7 @@
 package org.sopt.service;
 
 import org.sopt.domain.Member;
+import org.sopt.dto.MemberCreateRequest;
 import org.sopt.repository.MemberRepository;
 import org.sopt.validator.MemberValidator;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Long join(Member member) {
+    public Long join(MemberCreateRequest request) {
+        Member member = new Member(
+                request.name(),
+                request.birthdate(),
+                request.email(),
+                request.gender()
+        );
+
         memberValidator.validateNewMember(member); // 검증 로직 Validator 위임
         Member savedMember = memberRepository.save(member);
         return savedMember.getId();
