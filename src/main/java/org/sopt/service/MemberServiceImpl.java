@@ -2,12 +2,12 @@ package org.sopt.service;
 
 import org.sopt.domain.Member;
 import org.sopt.dto.MemberCreateRequest;
+import org.sopt.exception.EntityNotFoundException;
 import org.sopt.repository.MemberRepository;
-import org.sopt.validator.MemberValidator;
+import org.sopt.service.validator.MemberValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -20,7 +20,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Long join(MemberCreateRequest request) {
+    public Member join(MemberCreateRequest request) {
         Member member = new Member(
                 request.name(),
                 request.birthdate(),
@@ -29,13 +29,13 @@ public class MemberServiceImpl implements MemberService {
         );
 
         memberValidator.validateNewMember(member); // 검증 로직 Validator 위임
-        Member savedMember = memberRepository.save(member);
-        return savedMember.getId();
+        return memberRepository.save(member);
     }
 
     @Override
-    public Optional<Member> findOne(Long memberId) {
-        return memberRepository.findById(memberId);
+    public Member findOne(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 회원을 찾을 수 없습니다."));
     }
 
     @Override
@@ -44,11 +44,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean deleteMember(Long memberId) {
-        if (memberRepository.findById(memberId).isPresent()) {
-            memberRepository.deleteById(memberId);
-            return true;
-        }
-        return false;
+    public void deleteMember(Long memberId) {
+        Member member = this.findOne(memberId);
+        memberRepository.deleteById(member.getId());
     }
 }

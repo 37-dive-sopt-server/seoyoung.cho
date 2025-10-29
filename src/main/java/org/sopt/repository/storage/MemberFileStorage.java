@@ -1,4 +1,4 @@
-package org.sopt.storage;
+package org.sopt.repository.storage;
 
 import org.sopt.domain.Gender;
 import org.sopt.domain.Member;

@@ -1,4 +1,4 @@
-package org.sopt.component;
+package org.sopt.service.component;
 
 public interface IdGenerator {
     long generate();

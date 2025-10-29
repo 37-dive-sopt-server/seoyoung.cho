@@ -1,4 +1,4 @@
-package org.sopt.component;
+package org.sopt.service.component;
 
 import org.springframework.stereotype.Component;
 

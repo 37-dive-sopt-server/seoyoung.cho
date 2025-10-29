@@ -1,4 +1,4 @@
-package org.sopt.validator;
+package org.sopt.service.validator;
 
 import org.sopt.domain.Member;
 import org.sopt.exception.DuplicateMemberException;

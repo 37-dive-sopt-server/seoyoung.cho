@@ -1,9 +1,9 @@
 package org.sopt.repository;
 
 import jakarta.annotation.PreDestroy;
-import org.sopt.component.IdGenerator;
+import org.sopt.service.component.IdGenerator;
 import org.sopt.domain.Member;
-import org.sopt.storage.MemberFileStorage;
+import org.sopt.repository.storage.MemberFileStorage;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
