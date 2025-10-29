@@ -2,13 +2,19 @@ package org.sopt.service.validator;
 
 import org.sopt.domain.Member;
 import org.sopt.exception.DuplicateMemberException;
+import org.sopt.exception.InvalidEmailFormatException;
 import org.sopt.exception.MemberAgeException;
 import org.sopt.repository.MemberRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Pattern;
+
 @Component
 public class MemberValidator {
     private static final int MINIMUM_AGE_FOR_REGISTRATION = 20;
+    private static final Pattern EMAIL_REGEX = Pattern.compile(
+            "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"
+    );
 
     private final MemberRepository memberRepository;
 
@@ -17,8 +23,15 @@ public class MemberValidator {
     }
 
     public void validateNewMember(Member member) {
+        validateEmailFormat(member.getEmail());
         validateAge(member);
         validateDuplicateMember(member);
+    }
+
+    private void validateEmailFormat(String email) {
+        if (email == null || !EMAIL_REGEX.matcher(email).matches()) {
+            throw new InvalidEmailFormatException("이메일 형식이 올바르지 않습니다.");
+        }
     }
 
     private void validateAge(Member member) {
