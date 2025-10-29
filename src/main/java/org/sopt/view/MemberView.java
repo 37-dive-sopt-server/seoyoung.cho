@@ -59,7 +59,7 @@ public class MemberView {
             System.out.print("이메일을 입력하세요: ");
             String email = scanner.nextLine();
 
-            System.out.print("성별(MALE/FEMALE)을 입력하세요: ");
+            System.out.print("성별(MALE/FEMALE/OTHER)을 입력하세요: ");
             String genderStr = scanner.nextLine();
 
             if (name.trim().isEmpty() || email.trim().isEmpty() ||
@@ -79,7 +79,7 @@ public class MemberView {
         } catch (DateTimeParseException e) {
             System.out.println("❌ 날짜 형식이 올바르지 않습니다. (YYYY-MM-DD 형식으로 입력해주세요)");
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ 성별을 잘못 입력했습니다. (MALE 또는 FEMALE로 입력해주세요)");
+            System.out.println("❌ 성별을 잘못 입력했습니다. (MALE 또는 FEMALE 또는 OTHER로 입력해주세요)");
         } catch (IllegalStateException e) {
             System.out.println("❌ " + e.getMessage());
         } catch (Exception e) {
@@ -117,8 +117,8 @@ public class MemberView {
         } else {
             System.out.println("--- 📋 전체 회원 목록 📋 ---");
             for (Member member : allMembers) {
-                System.out.printf("👤 ID: %d, 이름: %s, 나이: %d, 이메일: %s\n",
-                        member.getId(), member.getName(), member.getAge(), member.getEmail());
+                System.out.printf("👤 ID: %d, 이름: %s, 생년월일: %s, 나이: %d, 이메일: %s\n",
+                        member.getId(), member.getName(), member.getBirthdate() , member.getAge(), member.getEmail());
             }
             System.out.println("--------------------------");
         }
