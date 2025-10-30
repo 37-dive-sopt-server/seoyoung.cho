@@ -12,6 +12,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -29,17 +30,24 @@ public class GlobalExceptionHandler {
         String message;
         if (e instanceof MethodArgumentTypeMismatchException) {
             message = "유저 ID 형식이 올바르지 않습니다.";
-        } else if (e instanceof IllegalArgumentException) {
+        } else if (e instanceof IllegalArgumentException) { // MemberValidator가 던진 예외
+            message = e.getMessage();
+        } else if (e instanceof HttpMessageNotReadableException) { // JSON 파싱 실패
             message = "성별은 MALE 또는 FEMALE 또는 OTHER 여야합니다.";
-        } else if (e instanceof HttpMessageNotReadableException) {
-            message = "필드값이 누락되었습니다.";
-        } else {
-            message = e.getMessage(); // MemberAgeException
+        } else { // 비즈니스 로직 예외
+            message = e.getMessage();
         }
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST) // 400
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message));
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiResponse<?>> handleNoHandlerFound(NoHandlerFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND) // 404
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "지원하지 않는 URL입니다."));
     }
 
     // 404 Not Found
@@ -50,7 +58,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), e.getMessage()));
     }
 
-    // 405 Method Not Allowed (
+    // 405 Method Not Allowed
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiResponse<?>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException e) {
         return ResponseEntity

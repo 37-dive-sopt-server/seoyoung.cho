@@ -5,6 +5,7 @@ import org.sopt.exception.DuplicateMemberException;
 import org.sopt.exception.InvalidEmailFormatException;
 import org.sopt.exception.MemberAgeException;
 import org.sopt.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
@@ -18,14 +19,30 @@ public class MemberValidator {
 
     private final MemberRepository memberRepository;
 
-    public MemberValidator(MemberRepository memberRepository) {
+    public MemberValidator(@Qualifier("fileRepo") MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
     public void validateNewMember(Member member) {
+        validateRequiredFields(member);
         validateEmailFormat(member.getEmail());
         validateAge(member);
         validateDuplicateMember(member);
+    }
+
+    private void validateRequiredFields(Member member) {
+        if (member.getName() == null || member.getName().isBlank()) {
+            throw new IllegalArgumentException("이름은 필수 입력 항목입니다.");
+        }
+        if (member.getBirthdate() == null) {
+            throw new IllegalArgumentException("생년월일은 필수 입력 항목입니다.");
+        }
+        if (member.getEmail() == null || member.getEmail().isBlank()) {
+            throw new IllegalArgumentException("이메일은 필수 입력 항목입니다.");
+        }
+        if (member.getGender() == null) {
+            throw new IllegalArgumentException("성별은 필수 입력 항목입니다.");
+        }
     }
 
     private void validateEmailFormat(String email) {

@@ -41,3 +41,5 @@ bin/
 
 members.csv
 
+application.properties
+application.yml
