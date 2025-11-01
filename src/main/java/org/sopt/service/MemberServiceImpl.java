@@ -1,48 +1,43 @@
 package org.sopt.service;
 
 import org.sopt.domain.Member;
+import org.sopt.dto.MemberCreateRequest;
+import org.sopt.exception.EntityNotFoundException;
 import org.sopt.repository.MemberRepository;
-import org.sopt.repository.MemoryMemberRepository;
+import org.sopt.service.validator.MemberValidator;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
+@Service
 public class MemberServiceImpl implements MemberService {
-
     private final MemberRepository memberRepository;
-    private static long sequence = 1L;
+    private final MemberValidator memberValidator;
 
-    public MemberServiceImpl(MemberRepository memberRepository) {
+    // 생성자 파라미터에서 @Qualifier로 fileRepo를 명시
+    public MemberServiceImpl(@Qualifier("fileRepo") MemberRepository memberRepository, MemberValidator memberValidator) {
         this.memberRepository = memberRepository;
+        this.memberValidator = memberValidator;
     }
 
     @Override
-    public Long join(Member member) {
-        validateDuplicateMember(member);
-        validateAge(member);
-        member.setId(sequence++);
-        memberRepository.save(member);
-        return member.getId();
-    }
+    public Member join(MemberCreateRequest request) {
+        Member member = new Member(
+                request.name(),
+                request.birthdate(),
+                request.email(),
+                request.gender()
+        );
 
-    // 나이 검증 로직
-    private void validateAge(Member member) {
-        if (member.getAge() < 20) {
-            throw new IllegalStateException("만 20세 미만은 회원으로 가입할 수 없습니다.");
-        }
-    }
-
-    // 이메일 중복 검사
-    private void validateDuplicateMember(Member member) {
-        memberRepository.findByEmail(member.getEmail())
-                .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 이메일입니다.");
-                });
+        memberValidator.validateNewMember(member); // 검증 로직 Validator 위임
+        return memberRepository.save(member);
     }
 
     @Override
-    public Optional<Member> findOne(Long memberId) {
-        return memberRepository.findById(memberId);
+    public Member findOne(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 회원을 찾을 수 없습니다."));
     }
 
     @Override
@@ -51,11 +46,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean deleteMember(Long memberId) {
-        if (memberRepository.findById(memberId).isPresent()) {
-            memberRepository.deleteById(memberId);
-            return true; // 삭제 성공
-        }
-        return false;
+    public void deleteMember(Long memberId) {
+        Member member = this.findOne(memberId);
+        memberRepository.deleteById(member.getId());
     }
 }

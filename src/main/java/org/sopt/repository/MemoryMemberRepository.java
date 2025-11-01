@@ -1,9 +1,13 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Member;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
+@Qualifier("memoryRepo")
 public class MemoryMemberRepository implements MemberRepository {
 
     private static final Map<Long, Member> store = new HashMap<>();

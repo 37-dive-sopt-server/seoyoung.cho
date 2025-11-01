@@ -11,19 +11,19 @@ public class Member {
     private String email;
     private Gender gender;
 
+    public Member() {
+    }
+
     public Member(String name, LocalDate birthdate, String email, Gender gender) {
+        this(null, name, birthdate, email, gender);
+    }
+
+    public Member(Long id, String name, LocalDate birthdate, String email, Gender gender) {
+        this.id = id;
         this.name = name;
         this.birthdate = birthdate;
         this.email = email;
         this.gender = gender;
-    }
-
-    public int getAge() {
-        return Period.between(this.birthdate, LocalDate.now()).getYears();
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getId() {
@@ -32,6 +32,10 @@ public class Member {
 
     public String getName() {
         return name;
+    }
+
+    public int getAge() {
+        return Period.between(this.birthdate, LocalDate.now()).getYears();
     }
 
     public LocalDate getBirthdate() {
