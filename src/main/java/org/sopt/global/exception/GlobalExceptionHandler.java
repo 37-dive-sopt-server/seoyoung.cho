@@ -1,9 +1,7 @@
 package org.sopt.global.exception;
 
 import org.sopt.global.dto.ApiResponse;
-import org.sopt.member.exception.DataStorageException;
 import org.sopt.member.exception.DuplicateMemberException;
-import org.sopt.member.exception.EntityNotFoundException;
 import org.sopt.member.exception.MemberAgeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

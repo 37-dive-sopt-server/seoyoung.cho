@@ -2,7 +2,7 @@ package org.sopt.member.service;
 
 import org.sopt.member.domain.Member;
 import org.sopt.member.dto.MemberCreateRequest;
-import org.sopt.member.exception.EntityNotFoundException;
+import org.sopt.global.exception.EntityNotFoundException;
 import org.sopt.member.repository.MemberRepository;
 import org.sopt.member.service.validator.MemberValidator;
 import org.springframework.stereotype.Service;
