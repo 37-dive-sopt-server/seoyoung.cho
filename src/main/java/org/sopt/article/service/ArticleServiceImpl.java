@@ -9,6 +9,8 @@ import org.sopt.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 public class ArticleServiceImpl implements ArticleService {
@@ -40,5 +42,10 @@ public class ArticleServiceImpl implements ArticleService {
     public Article findById(Long articleId) {
         return articleRepository.findById(articleId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다."));
+    }
+
+    @Override
+    public List<Article> findAll() {
+        return articleRepository.findAll();
     }
 }

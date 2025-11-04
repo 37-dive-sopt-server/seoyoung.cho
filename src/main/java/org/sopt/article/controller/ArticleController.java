@@ -2,6 +2,7 @@ package org.sopt.article.controller;
 
 import org.sopt.article.domain.Article;
 import org.sopt.article.dto.ArticleCreateRequest;
+import org.sopt.article.dto.ArticleListResponse;
 import org.sopt.article.dto.ArticleResponse;
 import org.sopt.article.service.ArticleService;
 import org.sopt.global.dto.ApiResponse;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/articles")
@@ -38,6 +40,15 @@ public class ArticleController {
 
         Article article = articleService.findById(articleId);
         ArticleResponse response = ArticleResponse.from(article);
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<ArticleListResponse>> findAllArticles() {
+
+        List<Article> articles = articleService.findAll();
+        ArticleListResponse response = ArticleListResponse.from(articles);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
