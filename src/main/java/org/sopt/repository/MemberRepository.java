@@ -1,16 +1,10 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Member;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface MemberRepository {
-    Member save(Member member);
-    Optional<Member> findById(Long id);
+public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email);
-    List<Member> findAll();
-    void deleteById(Long id);
 }

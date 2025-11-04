@@ -1,15 +1,24 @@
 package org.sopt.domain;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 
+@Entity
 public class Member {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private LocalDate birthdate;
     private String email;
     private Gender gender;
+
+    @OneToMany(mappedBy = "member")
+    private List<Article> articles;
 
     public Member() {
     }

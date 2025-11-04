@@ -5,7 +5,6 @@ import org.sopt.exception.DuplicateMemberException;
 import org.sopt.exception.InvalidEmailFormatException;
 import org.sopt.exception.MemberAgeException;
 import org.sopt.repository.MemberRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
@@ -19,7 +18,7 @@ public class MemberValidator {
 
     private final MemberRepository memberRepository;
 
-    public MemberValidator(@Qualifier("fileRepo") MemberRepository memberRepository) {
+    public MemberValidator(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 

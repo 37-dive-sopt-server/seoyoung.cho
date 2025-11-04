@@ -12,7 +12,7 @@ public record MemberResponse(
         String email,
         Gender gender
 ) {
-    public static MemberResponse of(Member member) {
+    public static MemberResponse from(Member member) {
         return new MemberResponse(
                 member.getId(),
                 member.getName(),

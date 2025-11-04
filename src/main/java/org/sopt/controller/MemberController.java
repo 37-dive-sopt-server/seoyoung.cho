@@ -1,15 +1,12 @@
 package org.sopt.controller;
 
-import org.sopt.dto.ApiResponse;
+import org.sopt.dto.*;
 import org.sopt.domain.Member;
-import org.sopt.dto.MemberCreateRequest;
-import org.sopt.dto.MemberResponse;
 import org.sopt.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,36 +22,34 @@ public class MemberController {
     @PostMapping
     public ResponseEntity<ApiResponse<MemberResponse>> createMember(@RequestBody MemberCreateRequest request) {
         Member newMember = memberService.join(request);
-        MemberResponse response = MemberResponse.of(newMember);
+        MemberResponse response = MemberResponse.from(newMember);
 
         return ResponseEntity
-                .created(URI.create("/members/" + newMember.getId()))
-                .body(ApiResponse.success(HttpStatus.CREATED.value(), "✅ 회원 등록 성공", response));
+                .status(HttpStatus.CREATED) // 201
+                .body(ApiResponse.created(response));
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<MemberResponse>> findMemberById(@PathVariable Long userId) {
         Member member = memberService.findOne(userId);
-        MemberResponse response = MemberResponse.of(member);
+        MemberResponse response = MemberResponse.from(member);
 
-        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "✅ 회원 조회 성공", response));
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<MemberResponse>>> getAllMembers() {
+    public ResponseEntity<ApiResponse<MemberListResponse>> getAllMembers() {
         List<Member> members = memberService.findAllMembers();
-        List<MemberResponse> responses = members.stream()
-                .map(MemberResponse::of)
-                .toList();
-        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "✅ 전체 회원 조회 성공", responses));
+        MemberListResponse response = MemberListResponse.from(members);
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse<?>> deleteMember(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<MemberDeleteResponse>> deleteMember(@PathVariable Long userId) {
         memberService.deleteMember(userId);
+        MemberDeleteResponse response = MemberDeleteResponse.of(userId);
 
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT) // 204
-                .body(ApiResponse.success(HttpStatus.NO_CONTENT.value(), "✅ 회원 삭제 성공"));
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
