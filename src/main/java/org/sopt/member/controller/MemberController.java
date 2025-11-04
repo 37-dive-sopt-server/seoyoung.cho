@@ -1,6 +1,5 @@
 package org.sopt.member.controller;
 
-import org.sopt.dto.*;
 import org.sopt.member.domain.Member;
 import org.sopt.global.dto.ApiResponse;
 import org.sopt.member.dto.MemberCreateRequest;
