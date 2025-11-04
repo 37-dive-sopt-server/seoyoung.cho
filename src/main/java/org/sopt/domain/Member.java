@@ -4,9 +4,16 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
@@ -18,10 +25,7 @@ public class Member {
     private Gender gender;
 
     @OneToMany(mappedBy = "member")
-    private List<Article> articles;
-
-    public Member() {
-    }
+    private List<Article> articles = new ArrayList<>();
 
     public Member(String name, LocalDate birthdate, String email, Gender gender) {
         this(null, name, birthdate, email, gender);
@@ -35,27 +39,7 @@ public class Member {
         this.gender = gender;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public int getAge() {
         return Period.between(this.birthdate, LocalDate.now()).getYears();
-    }
-
-    public LocalDate getBirthdate() {
-        return birthdate;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Gender getGender() {
-        return gender;
     }
 }
