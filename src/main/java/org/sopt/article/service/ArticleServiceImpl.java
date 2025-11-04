@@ -36,4 +36,9 @@ public class ArticleServiceImpl implements ArticleService {
         return articleRepository.save(newArticle);
     }
 
+    @Override
+    public Article findById(Long articleId) {
+        return articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다."));
+    }
 }

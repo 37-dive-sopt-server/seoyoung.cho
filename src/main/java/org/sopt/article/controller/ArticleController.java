@@ -7,10 +7,7 @@ import org.sopt.article.service.ArticleService;
 import org.sopt.global.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -33,5 +30,15 @@ public class ArticleController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.created(response));
+    }
+
+    @GetMapping("/{articleId}")
+    public ResponseEntity<ApiResponse<ArticleResponse>> findArticleById(
+            @PathVariable Long articleId) {
+
+        Article article = articleService.findById(articleId);
+        ArticleResponse response = ArticleResponse.from(article);
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
