@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "articles", indexes = {
         @Index(name = "idx_article_member_id", columnList = "member_id"),
-        @Index(name = "idx_article_created_at", columnList = "created_at DESC")
+        @Index(name = "idx_article_created_at", columnList = "created_at DESC"),
+        @Index(name = "idx_article_title", columnList = "title", unique = true)
 })
 public class Article {
 
