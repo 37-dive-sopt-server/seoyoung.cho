@@ -2,6 +2,7 @@ package org.sopt.article.controller;
 
 import jakarta.validation.Valid;
 import org.sopt.article.domain.Article;
+import org.sopt.article.domain.SearchType;
 import org.sopt.article.dto.ArticleCreateRequest;
 import org.sopt.article.dto.ArticleListResponse;
 import org.sopt.article.dto.ArticleResponse;
@@ -53,4 +54,15 @@ public class ArticleController {
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<ArticleListResponse>> searchArticles(
+            @RequestParam SearchType type, // 제목 또는 작성자
+            @RequestParam String keyword
+    ) {
+        List<Article> articles = articleService.search(type, keyword);
+        ArticleListResponse response = ArticleListResponse.from(articles);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
 }

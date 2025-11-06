@@ -3,7 +3,6 @@ package org.sopt.global.exception;
 import org.sopt.global.dto.ApiResponse;
 import org.sopt.member.exception.DuplicateMemberException;
 import org.sopt.member.exception.MemberAgeException;
-import org.sopt.global.exception.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -32,14 +31,14 @@ public class GlobalExceptionHandler {
         if (e instanceof HttpMessageNotReadableException) { // JSON 파싱 실패
             Throwable cause = e.getCause(); // 원인 확인
 
-            if (cause != null && cause.getCause() instanceof InvalidFormatException) {
+            if (cause != null && cause.getCause() instanceof InvalidFormatException) { // enum 파싱 오류
                 message = cause.getCause().getMessage();
             } else {
                 message = "요청 본문(JSON)의 구문이 잘못되었습니다.";
             }
         } else if (e instanceof MethodArgumentTypeMismatchException) {
             message = "유저 ID 형식이 올바르지 않습니다.";
-        } else if (e instanceof IllegalArgumentException) { // MemberValidator가 던진 예외
+        } else if (e instanceof IllegalArgumentException) { // Validator가 던진 예외
             message = e.getMessage();
         } else { // 비즈니스 로직 예외
             message = e.getMessage();

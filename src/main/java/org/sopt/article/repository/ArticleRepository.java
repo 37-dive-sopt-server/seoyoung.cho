@@ -3,11 +3,11 @@ package org.sopt.article.repository;
 import org.sopt.article.domain.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    boolean existsByTitle(String title);
+    List<Article> findByTitleContaining(String title);
 
-    Optional<Article> findByTitle(String title);
+    List<Article> findByMemberNameContaining(String memberName);
 }
 

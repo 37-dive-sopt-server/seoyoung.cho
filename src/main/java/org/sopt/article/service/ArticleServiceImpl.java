@@ -1,5 +1,6 @@
 package org.sopt.article.service;
 
+import org.sopt.article.domain.SearchType;
 import org.sopt.global.exception.EntityNotFoundException;
 import org.sopt.article.domain.Article;
 import org.sopt.article.dto.ArticleCreateRequest;
@@ -9,6 +10,7 @@ import org.sopt.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,5 +50,17 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<Article> findAll() {
         return articleRepository.findAll();
+    }
+
+    @Override
+    public List<Article> search(SearchType type, String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return new ArrayList<>();
+        }
+
+        return switch (type) {
+            case TITLE -> articleRepository.findByTitleContaining(keyword);
+            case MEMBER -> articleRepository.findByMemberNameContaining(keyword);
+        };
     }
 }
