@@ -7,8 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
+    @EntityGraph(attributePaths = {"member"})
     List<Article> findByTitleContaining(String title);
 
+    @EntityGraph(attributePaths = {"member"})
     List<Article> findByMemberNameContaining(String memberName);
 
     // N+1 해결을 위한 findAll() 오버라이드
