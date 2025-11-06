@@ -58,9 +58,6 @@ public class ArticleServiceImpl implements ArticleService {
             return new ArrayList<>();
         }
 
-        return switch (type) {
-            case TITLE -> articleRepository.findByTitleContaining(keyword);
-            case MEMBER -> articleRepository.findByMemberNameContaining(keyword);
-        };
+        return articleRepository.search(type, keyword);
     }
 }
