@@ -1,5 +1,6 @@
 package org.sopt.global.exception;
 
+import org.sopt.article.exception.DuplicateArticleTitleException;
 import org.sopt.global.dto.ApiResponse;
 import org.sopt.member.exception.DuplicateMemberException;
 import org.sopt.member.exception.MemberAgeException;
@@ -22,6 +23,7 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             MemberAgeException.class,
             DuplicateMemberException.class,
+            DuplicateArticleTitleException.class,
             IllegalArgumentException.class,
             HttpMessageNotReadableException.class
     })
