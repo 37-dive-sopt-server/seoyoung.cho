@@ -2,19 +2,13 @@ package org.sopt.member.service.validator;
 
 import org.sopt.member.domain.Member;
 import org.sopt.member.exception.DuplicateMemberException;
-import org.sopt.member.exception.InvalidEmailFormatException;
 import org.sopt.member.exception.MemberAgeException;
 import org.sopt.member.repository.MemberRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.regex.Pattern;
-
 @Component
 public class MemberValidator {
     private static final int MINIMUM_AGE_FOR_REGISTRATION = 20;
-    private static final Pattern EMAIL_REGEX = Pattern.compile(
-            "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"
-    );
 
     private final MemberRepository memberRepository;
 
@@ -23,31 +17,8 @@ public class MemberValidator {
     }
 
     public void validateNewMember(Member member) {
-        validateRequiredFields(member);
-        validateEmailFormat(member.getEmail());
         validateAge(member);
         validateDuplicateMember(member);
-    }
-
-    private void validateRequiredFields(Member member) {
-        if (member.getName() == null || member.getName().isBlank()) {
-            throw new IllegalArgumentException("이름은 필수 입력 항목입니다.");
-        }
-        if (member.getBirthdate() == null) {
-            throw new IllegalArgumentException("생년월일은 필수 입력 항목입니다.");
-        }
-        if (member.getEmail() == null || member.getEmail().isBlank()) {
-            throw new IllegalArgumentException("이메일은 필수 입력 항목입니다.");
-        }
-        if (member.getGender() == null) {
-            throw new IllegalArgumentException("성별은 필수 입력 항목입니다.");
-        }
-    }
-
-    private void validateEmailFormat(String email) {
-        if (email == null || !EMAIL_REGEX.matcher(email).matches()) {
-            throw new InvalidEmailFormatException("이메일 형식이 올바르지 않습니다.");
-        }
     }
 
     private void validateAge(Member member) {

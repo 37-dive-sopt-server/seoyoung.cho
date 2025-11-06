@@ -1,5 +1,6 @@
 package org.sopt.member.controller;
 
+import jakarta.validation.Valid;
 import org.sopt.member.domain.Member;
 import org.sopt.global.dto.ApiResponse;
 import org.sopt.member.dto.MemberCreateRequest;
@@ -24,7 +25,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MemberResponse>> createMember(@RequestBody MemberCreateRequest request) {
+    public ResponseEntity<ApiResponse<MemberResponse>> createMember(@Valid @RequestBody MemberCreateRequest request) {
         Member newMember = memberService.join(request);
         MemberResponse response = MemberResponse.from(newMember);
 

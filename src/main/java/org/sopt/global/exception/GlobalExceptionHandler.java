@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -33,13 +34,23 @@ public class GlobalExceptionHandler {
         } else if (e instanceof IllegalArgumentException) { // MemberValidator가 던진 예외
             message = e.getMessage();
         } else if (e instanceof HttpMessageNotReadableException) { // JSON 파싱 실패
-            message = "성별은 MALE 또는 FEMALE 또는 OTHER 여야합니다.";
+            message = "요청 본문(JSON)의 형식이 잘못되었거나 필수 필드가 누락되었습니다.";
         } else { // 비즈니스 로직 예외
             message = e.getMessage();
         }
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST) // 400
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+        // DTO에 설정한 에러 메시지(e.g., "이름은 필수 입력 항목입니다.")를 가져옴
+        String message = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message));
     }
 

@@ -1,5 +1,6 @@
 package org.sopt.article.controller;
 
+import jakarta.validation.Valid;
 import org.sopt.article.domain.Article;
 import org.sopt.article.dto.ArticleCreateRequest;
 import org.sopt.article.dto.ArticleListResponse;
@@ -24,7 +25,7 @@ public class ArticleController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ArticleResponse>> createArticle(
-            @RequestBody ArticleCreateRequest request) {
+            @Valid @RequestBody ArticleCreateRequest request) {
 
         Article newArticle = articleService.create(request);
         ArticleResponse response = ArticleResponse.from(newArticle);
