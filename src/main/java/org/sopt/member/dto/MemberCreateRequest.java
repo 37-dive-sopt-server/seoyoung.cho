@@ -1,8 +1,10 @@
 package org.sopt.member.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.sopt.global.deserializer.GenderDeserializer;
 import org.sopt.member.domain.Gender;
 
 import java.time.LocalDate;
@@ -19,6 +21,7 @@ public record MemberCreateRequest(
         String email,
 
         @NotNull(message = "성별은 필수 입력 항목입니다.")
+        @JsonDeserialize(using = GenderDeserializer.class)
         Gender gender
 ) {
 }

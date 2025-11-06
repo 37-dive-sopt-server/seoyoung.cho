@@ -1,10 +1,8 @@
 package org.sopt.article.service;
 
-import org.sopt.article.service.validator.ArticleValidator;
 import org.sopt.global.exception.EntityNotFoundException;
 import org.sopt.article.domain.Article;
 import org.sopt.article.dto.ArticleCreateRequest;
-import org.sopt.article.exception.DuplicateArticleTitleException;
 import org.sopt.article.repository.ArticleRepository;
 import org.sopt.member.domain.Member;
 import org.sopt.member.repository.MemberRepository;
@@ -18,19 +16,15 @@ import java.util.List;
 public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
-    private final ArticleValidator articleValidator;
 
-    public ArticleServiceImpl(ArticleRepository articleRepository, MemberRepository memberRepository,  ArticleValidator articleValidator) {
+    public ArticleServiceImpl(ArticleRepository articleRepository, MemberRepository memberRepository) {
         this.articleRepository = articleRepository;
         this.memberRepository = memberRepository;
-        this.articleValidator = articleValidator;
     }
 
     @Override
     @Transactional
     public Article create(ArticleCreateRequest request) {
-
-        articleValidator.validateNewArticle(request);
 
         Member member = memberRepository.findById(request.userId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 회원을 찾을 수 없습니다."));
