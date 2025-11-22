@@ -23,6 +23,7 @@ public class MemberServiceImpl implements MemberService {
     public Member join(MemberCreateRequest request) {
         Member member = new Member(
                 request.name(),
+                request.password(),
                 request.birthdate(),
                 request.email(),
                 request.gender()

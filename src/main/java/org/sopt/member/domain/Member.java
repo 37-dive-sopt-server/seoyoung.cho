@@ -28,6 +28,9 @@ public class Member {
     private String name;
 
     @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
     private LocalDate birthdate;
 
     @Column(nullable = false, unique = true)
@@ -40,16 +43,17 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Article> articles = new ArrayList<>();
 
-    public Member(String name, LocalDate birthdate, String email, Gender gender) {
-        this(null, name, birthdate, email, gender);
+    public Member(String name, String password, LocalDate birthdate, String email, Gender gender) {
+        this(null, name, password, birthdate, email, gender);
     }
 
-    public Member(Long id, String name, LocalDate birthdate, String email, Gender gender) {
+    public Member(Long id, String name, String password, LocalDate birthdate, String email, Gender gender) {
         this.id = id;
         this.name = name;
         this.birthdate = birthdate;
         this.email = email;
         this.gender = gender;
+        this.password = password;
     }
 
     public int getAge() {
