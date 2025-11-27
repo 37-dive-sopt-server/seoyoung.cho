@@ -18,6 +18,12 @@ public enum ErrorCode {
     DUPLICATE_MEMBER(HttpStatus.BAD_REQUEST, "이미 존재하는 회원입니다."),
     DUPLICATE_ARTICLE_TITLE(HttpStatus.BAD_REQUEST, "이미 존재하는 게시글 제목입니다."),
 
+    // 401 Unauthorized
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."),
+
     // 404 Not Found
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND, "지원하지 않는 URL입니다."),

@@ -86,6 +86,30 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.of(ErrorCode.INVALID_INPUT_VALUE, message));
     }
 
+    // 401 Unauthorized - 인증 실패
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse<?>> handleUnauthorizedException(UnauthorizedException e) {
+        return ResponseEntity
+                .status(ErrorCode.UNAUTHORIZED.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.UNAUTHORIZED, e.getMessage()));
+    }
+
+    // 401 Unauthorized - 유효하지 않은 토큰
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidTokenException(InvalidTokenException e) {
+        return ResponseEntity
+                .status(ErrorCode.INVALID_TOKEN.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.INVALID_TOKEN, e.getMessage()));
+    }
+
+    // 401 Unauthorized - 만료된 토큰
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<ApiResponse<?>> handleExpiredTokenException(ExpiredTokenException e) {
+        return ResponseEntity
+                .status(ErrorCode.EXPIRED_TOKEN.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.EXPIRED_TOKEN, e.getMessage()));
+    }
+
     // 404 Not Found - URL 없음
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleNoHandlerFound(NoHandlerFoundException e) {
@@ -110,7 +134,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.of(ErrorCode.METHOD_NOT_ALLOWED));
     }
 
-    // 500 Internal Server Error
+    // 500 Internal Server Error - 데이터 저장 실패
     @ExceptionHandler(DataStorageException.class)
     public ResponseEntity<ApiResponse<?>> handleDataStorageException(DataStorageException e) {
         System.err.println("DATA_STORAGE_ERROR: " + e.getMessage());
@@ -120,7 +144,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.of(ErrorCode.DATA_STORAGE_ERROR));
     }
 
-    // 500 Internal Server Error
+    // 500 Internal Server Error - 기타 예외
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
         System.err.println("INTERNAL_SERVER_ERROR: " + e.getMessage());
