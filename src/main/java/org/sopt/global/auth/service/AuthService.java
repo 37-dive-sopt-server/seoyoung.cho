@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import lombok.RequiredArgsConstructor;
+import org.sopt.global.exception.UnauthorizedException;
 import org.sopt.member.domain.Member;
 import org.sopt.member.dto.MemberResponse;
 import org.sopt.member.repository.MemberRepository;
@@ -14,58 +15,32 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final MemberRepository memberRepository;
+    private final JwtService jwtService;
 
-    public MemberResponse login(String authorizationHeader) {
-        if (authorizationHeader == null || authorizationHeader.isBlank()) {
-            throw new IllegalArgumentException("Authorization 헤더가 없습니다.");
+    public MemberResponse loginWithCredentials(String email, String password) {
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            throw new UnauthorizedException("이메일과 비밀번호를 모두 입력해주세요.");
         }
-
-        if (!authorizationHeader.startsWith("Basic ")) {
-            throw new IllegalArgumentException("Basic 인증 형식이 아닙니다.");
-        }
-
-        String token = authorizationHeader.substring("Basic ".length()).trim();
-        String decoded;
-        try {
-            decoded = new String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Authorization 헤더가 Base64 형식이 아닙니다.");
-        }
-
-        int idx = decoded.indexOf(":");
-        if (idx < 0) {
-            throw new IllegalArgumentException("이메일과 비밀번호 구분자(:)가 없습니다.");
-        }
-
-        String email = decoded.substring(0, idx);
-        String password = decoded.substring(idx + 1);
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
         if (member.getPassword() == null || !member.getPassword().equals(password)) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
+            throw new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
         return MemberResponse.from(member);
     }
 
-    public MemberResponse loginWithCredentials(String email, String password) {
-        if (email == null || email.isBlank() || password == null ||
-                password.isBlank()) {
-            throw new IllegalArgumentException("이메일과 비밀번호를 모두 입력해주세요.");
+    public MemberResponse authenticateWithJwt(String authorization) {
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            throw new UnauthorizedException("유효하지 않은 인증 정보입니다.");
         }
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+        String token = authorization.substring("Bearer ".length()).trim();
+        Long memberId = jwtService.verifyAndGetMemberId(token);
 
-        if (member.getPassword() == null || !
-                member.getPassword().equals(password)) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
-        }
-
-        return MemberResponse.from(member);
-
+        return getMemberById(memberId);
     }
 
     public MemberResponse getMemberById(Long memberId) {
