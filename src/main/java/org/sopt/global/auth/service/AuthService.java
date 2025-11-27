@@ -1,4 +1,4 @@
-package org.sopt.global.service;
+package org.sopt.global.auth.service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

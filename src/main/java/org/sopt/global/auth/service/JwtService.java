@@ -1,4 +1,4 @@
-package org.sopt.global.service;
+package org.sopt.global.auth.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

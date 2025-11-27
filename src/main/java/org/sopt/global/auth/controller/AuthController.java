@@ -1,4 +1,4 @@
-package org.sopt.global.controller;
+package org.sopt.global.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
@@ -6,9 +6,9 @@ import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sopt.global.dto.ApiResponse;
-import org.sopt.global.service.JwtService;
+import org.sopt.global.auth.service.JwtService;
 import org.sopt.member.dto.MemberResponse;
-import org.sopt.global.service.AuthService;
+import org.sopt.global.auth.service.AuthService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
