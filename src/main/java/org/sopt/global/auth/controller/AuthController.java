@@ -18,13 +18,25 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
 
-    @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인하여 JWT 토큰을 발급받습니다.")
+    @Operation(summary = "일반 로그인", description = "이메일과 비밀번호로 로그인하여 JWT 토큰을 발급받습니다.")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<String>> login(
             @RequestParam("email") String email,
             @RequestParam("password") String password
     ) {
         MemberResponse member = authService.loginWithCredentials(email, password);
+        String token = jwtService.generateToken(member.userId(), member.email());
+
+        return ResponseEntity.ok(ApiResponse.ok(token));
+    }
+
+    @Operation(summary = "구글 로그인", description = "구글 OAuth 로그인하여 JWT 토큰을 발급받습니다.")
+    @PostMapping("/login/google")
+    public ResponseEntity<ApiResponse<String>> loginWithGoogle(
+            @RequestParam("code") String authorizationCode
+    ) {
+        MemberResponse member = authService.loginWithGoogle(authorizationCode);
+
         String token = jwtService.generateToken(member.userId(), member.email());
 
         return ResponseEntity.ok(ApiResponse.ok(token));
