@@ -1,10 +1,10 @@
 package org.sopt.global.exception;
 
 import org.sopt.article.exception.DuplicateArticleTitleException;
+import org.sopt.global.code.ErrorCode;
 import org.sopt.global.dto.ApiResponse;
 import org.sopt.member.exception.DuplicateMemberException;
 import org.sopt.member.exception.MemberAgeException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -18,78 +18,116 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 400 Bad Request (비즈니스 로직 예외)
-    @ExceptionHandler({
-            MethodArgumentTypeMismatchException.class,
-            MemberAgeException.class,
-            DuplicateMemberException.class,
-            DuplicateArticleTitleException.class,
-            IllegalArgumentException.class,
-            HttpMessageNotReadableException.class
-    })
+    // 400 Bad Request - JSON 파싱 실패
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<?>> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        Throwable cause = e.getCause();
 
-    public ResponseEntity<ApiResponse<?>> handleBadRequestException(Exception e) {
-        String message;
-        if (e instanceof HttpMessageNotReadableException) { // JSON 파싱 실패
-            Throwable cause = e.getCause(); // 원인 확인
-
-            if (cause != null && cause.getCause() instanceof InvalidFormatException) { // enum 파싱 오류
-                message = cause.getCause().getMessage();
-            } else {
-                message = "요청 본문(JSON)의 구문이 잘못되었습니다.";
-            }
-        } else if (e instanceof MethodArgumentTypeMismatchException) {
-            message = "유저 ID 형식이 올바르지 않습니다.";
-        } else if (e instanceof IllegalArgumentException) { // Validator가 던진 예외
-            message = e.getMessage();
-        } else { // 비즈니스 로직 예외
-            message = e.getMessage();
+        if (cause != null && cause.getCause() instanceof InvalidFormatException) {
+            // enum 파싱 오류인 경우 원인 메시지 사용
+            String message = cause.getCause().getMessage();
+            return ResponseEntity
+                    .status(ErrorCode.INVALID_REQUEST_BODY.getHttpStatus())
+                    .body(ApiResponse.of(ErrorCode.INVALID_REQUEST_BODY, message));
         }
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST) // 400
-                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message));
+                .status(ErrorCode.INVALID_REQUEST_BODY.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.INVALID_REQUEST_BODY));
     }
 
+    // 400 Bad Request - 타입 미스매치
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<?>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        return ResponseEntity
+                .status(ErrorCode.INVALID_USER_ID_FORMAT.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.INVALID_USER_ID_FORMAT));
+    }
+
+    // 400 Bad Request - 회원 나이 예외
+    @ExceptionHandler(MemberAgeException.class)
+    public ResponseEntity<ApiResponse<?>> handleMemberAgeException(MemberAgeException e) {
+        return ResponseEntity
+                .status(ErrorCode.MEMBER_AGE_INVALID.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.MEMBER_AGE_INVALID, e.getMessage()));
+    }
+
+    // 400 Bad Request - 중복 회원
+    @ExceptionHandler(DuplicateMemberException.class)
+    public ResponseEntity<ApiResponse<?>> handleDuplicateMemberException(DuplicateMemberException e) {
+        return ResponseEntity
+                .status(ErrorCode.DUPLICATE_MEMBER.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.DUPLICATE_MEMBER, e.getMessage()));
+    }
+
+    // 400 Bad Request - 중복 게시글 제목
+    @ExceptionHandler(DuplicateArticleTitleException.class)
+    public ResponseEntity<ApiResponse<?>> handleDuplicateArticleTitleException(DuplicateArticleTitleException e) {
+        return ResponseEntity
+                .status(ErrorCode.DUPLICATE_ARTICLE_TITLE.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.DUPLICATE_ARTICLE_TITLE, e.getMessage()));
+    }
+
+    // 400 Bad Request - IllegalArgumentException
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<?>> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity
+                .status(ErrorCode.INVALID_ARGUMENT.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.INVALID_ARGUMENT, e.getMessage()));
+    }
+
+    // 400 Bad Request - Validation 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message));
+                .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.INVALID_INPUT_VALUE, message));
     }
 
+    // 404 Not Found - URL 없음
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleNoHandlerFound(NoHandlerFoundException e) {
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND) // 404
-                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "지원하지 않는 URL입니다."));
+                .status(ErrorCode.URL_NOT_FOUND.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.URL_NOT_FOUND));
     }
 
-    // 404 Not Found
+    // 404 Not Found - 엔티티 없음
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiResponse<?>> handleNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<ApiResponse<?>> handleEntityNotFoundException(EntityNotFoundException e) {
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND) // 404
-                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+                .status(ErrorCode.ENTITY_NOT_FOUND.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.ENTITY_NOT_FOUND, e.getMessage()));
     }
 
     // 405 Method Not Allowed
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiResponse<?>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException e) {
         return ResponseEntity
-                .status(HttpStatus.METHOD_NOT_ALLOWED) // 405
-                .body(ApiResponse.error(HttpStatus.METHOD_NOT_ALLOWED.value(), "잘못된 HTTP method 요청입니다."));
+                .status(ErrorCode.METHOD_NOT_ALLOWED.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.METHOD_NOT_ALLOWED));
     }
 
     // 500 Internal Server Error
-    @ExceptionHandler({DataStorageException.class, Exception.class})
-    public ResponseEntity<ApiResponse<?>> handleInternalException(Exception e) {
-        System.err.println("INTERNAL_SERVER_ERROR: " + e.getMessage());
+    @ExceptionHandler(DataStorageException.class)
+    public ResponseEntity<ApiResponse<?>> handleDataStorageException(DataStorageException e) {
+        System.err.println("DATA_STORAGE_ERROR: " + e.getMessage());
 
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
-                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 내부 오류가 발생했습니다."));
+                .status(ErrorCode.DATA_STORAGE_ERROR.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.DATA_STORAGE_ERROR));
+    }
+
+    // 500 Internal Server Error
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
+        System.err.println("INTERNAL_SERVER_ERROR: " + e.getMessage());
+        e.printStackTrace();
+
+        return ResponseEntity
+                .status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus())
+                .body(ApiResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 }
