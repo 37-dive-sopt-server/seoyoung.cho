@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sopt.global.auth.dto.GoogleTokenResponse;
 import org.sopt.global.auth.dto.GoogleUserInfoResponse;
+import org.sopt.global.auth.dto.TokenResponse;
+import org.sopt.global.exception.EntityNotFoundException;
 import org.sopt.global.exception.UnauthorizedException;
 import org.sopt.member.domain.Gender;
 import org.sopt.member.domain.Member;
@@ -23,10 +25,12 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
     private final GoogleOAuthService googleOAuthService;
+    private final RefreshTokenService refreshTokenService;
 
     // 소셜 로그인 기본값
     private static final LocalDate DEFAULT_BIRTHDATE = LocalDate.of(2000, 1, 1);
     private static final Gender DEFAULT_GENDER = Gender.OTHER;
+    private static final long REFRESH_TOKEN_EXPIRES_IN_SECONDS = 1209600;
 
     /* 이메일과 비밀번호로 로그인 */
     public MemberResponse loginWithCredentials(String email, String password) {
@@ -72,7 +76,9 @@ public class AuthService {
 
     /* 구글 회원 생성 */
     private Member createGoogleMember(GoogleUserInfoResponse userInfo) {
-        log.info("구글 신규 회원 생성 - email: {}", userInfo.email());
+        log.info("구글 신규 회원 생성");
+        log.info("Email: {}", userInfo.email());
+        log.info("Name: {}", userInfo.name());
 
         Member newMember = Member.createSocialMember(
                 userInfo.name(),
@@ -105,5 +111,35 @@ public class AuthService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
         return MemberResponse.from(member);
+    }
+
+    @Transactional
+    public TokenResponse refreshAccessToken(String refreshToken) {
+        log.info("Access Token 재발급 시작");
+
+        Long memberId = refreshTokenService.validateAndGetMemberId(refreshToken);
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
+
+        String newAccessToken = jwtService.generateAccessToken(member.getId(), member.getEmail());
+
+        String newRefreshToken = jwtService.generateRefreshToken(member.getId());
+        refreshTokenService.saveOrUpdate(member.getId(), newRefreshToken, REFRESH_TOKEN_EXPIRES_IN_SECONDS);
+
+        log.info("✅ Access Token 재발급 성공 - memberId: {}", memberId);
+
+        return TokenResponse.of(newAccessToken, newRefreshToken);
+    }
+
+    @Transactional
+    public void logout(Long memberId) {
+        refreshTokenService.deleteByMemberId(memberId);
+        log.info("로그아웃 완료 - memberId: {}", memberId);
+    }
+
+    @Transactional
+    public void saveRefreshToken(Long memberId, String refreshToken, long expiresInSeconds) {
+        refreshTokenService.saveOrUpdate(memberId, refreshToken, expiresInSeconds);
     }
 }
