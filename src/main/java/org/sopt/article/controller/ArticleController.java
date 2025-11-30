@@ -1,5 +1,6 @@
 package org.sopt.article.controller;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.sopt.article.domain.Article;
 import org.sopt.article.domain.SearchType;
@@ -8,6 +9,7 @@ import org.sopt.article.dto.ArticleListResponse;
 import org.sopt.article.dto.ArticleResponse;
 import org.sopt.article.service.ArticleService;
 import org.sopt.global.dto.ApiResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +28,11 @@ public class ArticleController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ArticleResponse>> createArticle(
+            @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorization,
             @Valid @RequestBody ArticleCreateRequest request) {
 
-        Article newArticle = articleService.create(request);
+
+        Article newArticle = articleService.create(authorization, request);
         ArticleResponse response = ArticleResponse.from(newArticle);
 
         return ResponseEntity
