@@ -1,7 +1,9 @@
 package org.sopt.global.exception;
 
-public class EntityNotFoundException extends RuntimeException {
+import org.sopt.global.code.ErrorCode;
+
+public class EntityNotFoundException extends BusinessException {
     public EntityNotFoundException(String message) {
-        super(message);
+        super(ErrorCode.ENTITY_NOT_FOUND);
     }
 }

@@ -1,11 +1,9 @@
 package org.sopt.global.exception;
 
-public class InvalidTokenException extends RuntimeException {
-    public InvalidTokenException(String message) {
-        super(message);
-    }
+import org.sopt.global.code.ErrorCode;
 
-    public InvalidTokenException(String message, Throwable cause) {
-        super(message, cause);
+public class InvalidTokenException extends BusinessException {
+    public InvalidTokenException(String message) {
+        super(ErrorCode.INVALID_TOKEN);
     }
 }

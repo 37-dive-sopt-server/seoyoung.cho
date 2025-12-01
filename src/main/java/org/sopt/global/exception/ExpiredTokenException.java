@@ -1,11 +1,9 @@
 package org.sopt.global.exception;
 
-public class ExpiredTokenException extends RuntimeException {
-    public ExpiredTokenException(String message) {
-        super(message);
-    }
+import org.sopt.global.code.ErrorCode;
 
-    public ExpiredTokenException(String message, Throwable cause) {
-        super(message, cause);
+public class ExpiredTokenException extends BusinessException {
+    public ExpiredTokenException(String message) {
+        super(ErrorCode.EXPIRED_TOKEN);
     }
 }

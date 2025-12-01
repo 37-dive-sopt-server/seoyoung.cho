@@ -1,7 +1,10 @@
 package org.sopt.global.exception;
 
-public class UnauthorizedException extends RuntimeException {
+import org.sopt.global.code.ErrorCode;
+
+public class UnauthorizedException extends BusinessException {
     public UnauthorizedException(String message) {
-        super(message);
+        super(ErrorCode.UNAUTHORIZED);
     }
 }
+

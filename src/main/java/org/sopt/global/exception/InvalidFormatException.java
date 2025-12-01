@@ -1,12 +1,9 @@
 package org.sopt.global.exception;
 
-public class InvalidFormatException extends IllegalArgumentException {
+import org.sopt.global.code.ErrorCode;
 
+public class InvalidFormatException extends BusinessException {
     public InvalidFormatException(String message) {
-        super(message);
-    }
-
-    public InvalidFormatException(String message, Throwable cause) {
-        super(message, cause);
+        super(ErrorCode.INVALID_ARGUMENT);
     }
 }
