@@ -24,6 +24,9 @@ public enum ErrorCode {
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."),
 
+    // 403 Forbidden
+    FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+
     // 404 Not Found
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
     URL_NOT_FOUND(HttpStatus.NOT_FOUND, "지원하지 않는 URL입니다."),
