@@ -7,7 +7,7 @@ import org.sopt.article.dto.ArticleCreateRequest;
 import java.util.List;
 
 public interface ArticleService {
-    Article create(String authorization, ArticleCreateRequest request);
+    Article create(Long memberId, ArticleCreateRequest request);
     Article findById(Long articleId);
     List<Article> findAll();
     List<Article> search(SearchType title, String memberName);

@@ -13,6 +13,7 @@ import org.sopt.global.dto.ApiResponse;
 import org.sopt.member.dto.MemberResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,9 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final JwtService jwtService;
-
-    private static final long REFRESH_TOKEN_EXPIRES_IN_SECONDS = 1209600;
 
     @Operation(summary = "일반 로그인", description = "이메일과 비밀번호로 로그인하여 JWT 토큰을 발급받습니다.")
     @PostMapping("/login")
@@ -48,23 +46,16 @@ public class AuthController {
 
     @Operation(summary = "로그아웃", description = "로그아웃하고 Refresh Token을 삭제합니다.")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization
-    ) {
-        MemberResponse member = authService.authenticateWithJwt(authorization);
-        authService.logout(member.userId());
-
+    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal Long memberId) {
+        authService.logout(memberId);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
     @Operation(summary = "내 정보 조회", description = "JWT 토큰으로 인증하여 내 정보를 조회합니다.")
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<MemberResponse>> getMyInfo(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization
-    ) {
-        MemberResponse member = authService.authenticateWithJwt(authorization);
-
-        return ResponseEntity.ok(ApiResponse.ok(member));
+    public ResponseEntity<ApiResponse<MemberResponse>> getMyInfo(@AuthenticationPrincipal Long memberId) {
+        MemberResponse memberResponse = authService.getMemberById(memberId);
+        return ResponseEntity.ok(ApiResponse.ok(memberResponse));
     }
 }
 

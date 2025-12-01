@@ -12,6 +12,7 @@ import org.sopt.global.dto.ApiResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -28,11 +29,11 @@ public class ArticleController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ArticleResponse>> createArticle(
-            @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorization,
+            @AuthenticationPrincipal Long memberId,
             @Valid @RequestBody ArticleCreateRequest request) {
 
 
-        Article newArticle = articleService.create(authorization, request);
+        Article newArticle = articleService.create(memberId, request);
         ArticleResponse response = ArticleResponse.from(newArticle);
 
         return ResponseEntity

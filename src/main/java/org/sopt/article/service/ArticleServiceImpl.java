@@ -28,13 +28,11 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional
-    public Article create(String authorization, ArticleCreateRequest request) {
-
-        MemberResponse memberResponse = authService.authenticateWithJwt(authorization);        articleValidator.validateNewArticle(request);
+    public Article create(Long memberId, ArticleCreateRequest request) {
 
         articleValidator.validateNewArticle(request);
 
-        Member member = memberRepository.findById(memberResponse.userId())
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 회원을 찾을 수 없습니다."));
 
         Article newArticle = Article.create(
