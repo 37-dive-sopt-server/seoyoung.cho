@@ -1,6 +1,7 @@
 package org.sopt.global.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sopt.global.auth.dto.GoogleLoginRequest;
@@ -8,16 +9,15 @@ import org.sopt.global.auth.dto.LoginRequest;
 import org.sopt.global.auth.dto.RefreshTokenRequest;
 import org.sopt.global.auth.dto.TokenResponse;
 import org.sopt.global.auth.service.AuthService;
-import org.sopt.global.auth.service.JwtService;
 import org.sopt.global.dto.ApiResponse;
 import org.sopt.member.dto.MemberResponse;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Auth", description = "인증 API")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
