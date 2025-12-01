@@ -62,7 +62,12 @@ public class AuthService {
         );
 
         Member member = memberRepository.findByEmail(userInfo.email())
-                .orElseGet(() -> createGoogleMember(userInfo));
+                .orElseGet(() -> createSocialMember(
+                        userInfo.name(),
+                        userInfo.email(),
+                        userInfo.sub(),
+                        Provider.GOOGLE
+                ));
 
         // 기존 회원인데 다른 Provider인 경우 예외
         if (member.getProvider() != Provider.GOOGLE) {
@@ -74,22 +79,27 @@ public class AuthService {
         return generateTokens(member);
     }
 
-    /* 구글 회원 생성 */
-    private Member createGoogleMember(GoogleUserInfoResponse userInfo) {
-        log.info("구글 신규 회원 생성");
-        log.info("Email: {}", userInfo.email());
-        log.info("Name: {}", userInfo.name());
+    /* 소셜 회원 생성 */
+    private Member createSocialMember(String name, String email, String providerId, Provider provider) {
+        log.info("🆕 {} 신규 회원 생성", provider.name());
+        log.info("📧 Email: {}", email);
+        log.info("👤 Name: {}", name);
+        log.info("🆔 Provider ID: {}", providerId);
 
         Member newMember = Member.createSocialMember(
-                userInfo.name(),
+                name,
                 DEFAULT_BIRTHDATE,
-                userInfo.email(),
+                email,
                 DEFAULT_GENDER,
-                Provider.GOOGLE,
-                userInfo.sub()
+                provider,
+                providerId
         );
 
-        return memberRepository.save(newMember);
+        Member saved = memberRepository.save(newMember);
+        log.info("✅ 회원 저장 완료 - ID: {}, Provider: {}, ProviderId: {}",
+                saved.getId(), saved.getProvider(), saved.getProviderId());
+
+        return saved;
     }
 
     public MemberResponse authenticateWithJwt(String authorization) {
