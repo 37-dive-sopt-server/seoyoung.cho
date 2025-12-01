@@ -1,7 +1,10 @@
 package org.sopt.global.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.sopt.global.auth.dto.GoogleLoginRequest;
+import org.sopt.global.auth.dto.LoginRequest;
 import org.sopt.global.auth.dto.RefreshTokenRequest;
 import org.sopt.global.auth.dto.TokenResponse;
 import org.sopt.global.auth.service.AuthService;
@@ -24,32 +27,16 @@ public class AuthController {
 
     @Operation(summary = "일반 로그인", description = "이메일과 비밀번호로 로그인하여 JWT 토큰을 발급받습니다.")
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<TokenResponse>> login(
-            @RequestParam("email") String email,
-            @RequestParam("password") String password
-    ) {
-        MemberResponse member = authService.loginWithCredentials(email, password);
-
-        String accessToken = jwtService.generateAccessToken(member.userId(), member.email());
-        String refreshToken = jwtService.generateRefreshToken(member.userId());
-
-        authService.saveRefreshToken(member.userId(), refreshToken, REFRESH_TOKEN_EXPIRES_IN_SECONDS);
-
-        TokenResponse tokenResponse = TokenResponse.of(accessToken, refreshToken);
-
+    public ResponseEntity<ApiResponse<TokenResponse>> login(@Valid @RequestBody LoginRequest request) {
+        TokenResponse tokenResponse = authService.login(request.email(), request.password());
         return ResponseEntity.ok(ApiResponse.ok(tokenResponse));
     }
 
     @Operation(summary = "구글 로그인", description = "구글 OAuth 로그인하여 JWT 토큰을 발급받습니다.")
     @PostMapping("/login/google")
-    public ResponseEntity<ApiResponse<String>> loginWithGoogle(
-            @RequestParam("code") String authorizationCode
-    ) {
-        MemberResponse member = authService.loginWithGoogle(authorizationCode);
-
-        String token = jwtService.generateToken(member.userId(), member.email());
-
-        return ResponseEntity.ok(ApiResponse.ok(token));
+    public ResponseEntity<ApiResponse<TokenResponse>> loginWithGoogle(@Valid @RequestBody GoogleLoginRequest request) {
+        TokenResponse tokenResponse = authService.loginWithGoogle(request.authorizationCode());
+        return ResponseEntity.ok(ApiResponse.ok(tokenResponse));
     }
 
     @Operation(summary = "토큰 갱신", description = "Refresh Token으로 새로운 Access Token을 발급받습니다.")

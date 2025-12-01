@@ -33,10 +33,7 @@ public class AuthService {
     private static final long REFRESH_TOKEN_EXPIRES_IN_SECONDS = 1209600;
 
     /* 이메일과 비밀번호로 로그인 */
-    public MemberResponse loginWithCredentials(String email, String password) {
-        if (email == null || email.isBlank() || password == null || password.isBlank()) {
-            throw new UnauthorizedException("이메일과 비밀번호를 모두 입력해주세요.");
-        }
+    public TokenResponse login(String email, String password) {
 
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다."));
@@ -50,17 +47,19 @@ public class AuthService {
             throw new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        return MemberResponse.from(member);
+        return generateTokens(member);
     }
 
     /* 구글 소셜 로그인 */
     @Transactional
-    public MemberResponse loginWithGoogle(String authorizationCode) {
+    public TokenResponse loginWithGoogle(String authorizationCode) {
         log.info("구글 소셜 로그인 시작");
 
         GoogleTokenResponse tokenResponse = googleOAuthService.getAccessToken(authorizationCode);
 
-        GoogleUserInfoResponse userInfo = googleOAuthService.getUserInfo(tokenResponse.accessToken());
+        GoogleUserInfoResponse userInfo = googleOAuthService.getUserInfo(
+                tokenResponse.accessToken()
+        );
 
         Member member = memberRepository.findByEmail(userInfo.email())
                 .orElseGet(() -> createGoogleMember(userInfo));
@@ -71,7 +70,8 @@ public class AuthService {
         }
 
         log.info("구글 소셜 로그인 성공 - email: {}", member.getEmail());
-        return MemberResponse.from(member);
+
+        return generateTokens(member);
     }
 
     /* 구글 회원 생성 */
@@ -124,6 +124,7 @@ public class AuthService {
 
         String newAccessToken = jwtService.generateAccessToken(member.getId(), member.getEmail());
 
+        // RTR
         String newRefreshToken = jwtService.generateRefreshToken(member.getId());
         refreshTokenService.saveOrUpdate(member.getId(), newRefreshToken, REFRESH_TOKEN_EXPIRES_IN_SECONDS);
 
@@ -141,5 +142,18 @@ public class AuthService {
     @Transactional
     public void saveRefreshToken(Long memberId, String refreshToken, long expiresInSeconds) {
         refreshTokenService.saveOrUpdate(memberId, refreshToken, expiresInSeconds);
+    }
+
+    private TokenResponse generateTokens(Member member) {
+        log.info("🎫 토큰 발급 시작 - memberId: {}", member.getId());
+
+        String accessToken = jwtService.generateAccessToken(member.getId(), member.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(member.getId());
+
+        refreshTokenService.saveOrUpdate(member.getId(), refreshToken, REFRESH_TOKEN_EXPIRES_IN_SECONDS);
+
+        log.info("토큰 발급 완료 - memberId: {}", member.getId());
+
+        return TokenResponse.of(accessToken, refreshToken);
     }
 }
