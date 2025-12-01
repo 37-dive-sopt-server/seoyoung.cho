@@ -15,6 +15,8 @@ import org.sopt.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 @Service
@@ -55,7 +57,9 @@ public class AuthService {
     public TokenResponse loginWithGoogle(String authorizationCode) {
         log.info("구글 소셜 로그인 시작");
 
-        GoogleTokenResponse tokenResponse = googleOAuthService.getAccessToken(authorizationCode);
+        String decodedCode = URLDecoder.decode(authorizationCode, StandardCharsets.UTF_8);
+
+        GoogleTokenResponse tokenResponse = googleOAuthService.getAccessToken(decodedCode);
 
         GoogleUserInfoResponse userInfo = googleOAuthService.getUserInfo(
                 tokenResponse.accessToken()

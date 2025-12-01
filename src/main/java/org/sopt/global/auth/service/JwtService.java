@@ -88,7 +88,7 @@ public class JwtService {
         } catch (TokenExpiredException e) {
             throw new ExpiredTokenException("토큰이 만료되었습니다.");
         } catch (JWTVerificationException e) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다.", e);
+            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
         }
     }
 
@@ -103,7 +103,7 @@ public class JwtService {
         } catch (TokenExpiredException e) {
             throw new ExpiredTokenException("토큰이 만료되었습니다.");
         } catch (JWTVerificationException e) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다.", e);
+            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
         }
     }
 }

@@ -51,6 +51,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String authHeader = request.getHeader("Authorization");
+
+        // 토큰이 없거나 Bearer 타입이 아니면 검증 로직을 건너뛰고 다음 필터로 넘김
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             String token = jwtService.extractTokenFromHeader(request.getHeader("Authorization"));
 
