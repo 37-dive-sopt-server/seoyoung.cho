@@ -1,5 +1,6 @@
 package org.sopt.member.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.sopt.member.domain.Member;
 import org.sopt.global.dto.ApiResponse;
@@ -14,8 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Members", description = "회원 API")
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/members")
 public class MemberController {
 
     private final MemberService memberService;

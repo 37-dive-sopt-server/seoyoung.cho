@@ -21,8 +21,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member join(MemberCreateRequest request) {
-        Member member = new Member(
+        Member member = Member.createLocalMember(
                 request.name(),
+                request.password(),
                 request.birthdate(),
                 request.email(),
                 request.gender()

@@ -1,7 +1,9 @@
 package org.sopt.global.exception;
 
-public class DataStorageException extends RuntimeException {
-    public DataStorageException(String message, Throwable cause) {
-        super(message, cause);
+import org.sopt.global.code.ErrorCode;
+
+public class DataStorageException extends BusinessException {
+    public DataStorageException(String message) {
+        super(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 }

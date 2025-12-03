@@ -1,6 +1,7 @@
 package org.sopt.global.dto;
 
-import org.springframework.http.HttpStatus;
+import org.sopt.global.code.ErrorCode;
+import org.sopt.global.code.SuccessCode;
 
 public class ApiResponse<T> {
     private final int code; // HTTP 상태 코드
@@ -13,26 +14,30 @@ public class ApiResponse<T> {
         this.data = data;
     }
 
-    public static <T> ApiResponse<T> ok(int code, String message, T data) {
-        return new ApiResponse<>(code, message, data);
+    public static <T> ApiResponse<T> of(SuccessCode successCode, T data) {
+        return new ApiResponse<>(successCode.getStatusCode(), successCode.getMessage(), data);
     }
 
-    public static <T> ApiResponse<T> ok(int code, String message) {
-        return new ApiResponse<>(code, message, null);
+    public static <T> ApiResponse<T> of(SuccessCode successCode) {
+        return new ApiResponse<>(successCode.getStatusCode(), successCode.getMessage(), null);
     }
 
     // 200 OK
     public static <T> ApiResponse<T> ok(T data) {
-        return new ApiResponse<>(HttpStatus.OK.value(), "요청에 성공했습니다.", data);
+        return of(SuccessCode.OK, data);
     }
 
     // 201 Created
     public static <T> ApiResponse<T> created(T data) {
-        return new ApiResponse<>(HttpStatus.CREATED.value(), "✅ 리소스가 성공적으로 생성되었습니다.", data);
+        return of(SuccessCode.CREATED, data);
     }
 
-    public static <T> ApiResponse<T> error(int code, String message) {
-        return new ApiResponse<>(code, message, null);
+    public static <T> ApiResponse<T> of(ErrorCode errorCode) {
+        return new ApiResponse<>(errorCode.getStatusCode(), errorCode.getMessage(), null);
+    }
+
+    public static <T> ApiResponse<T> of(ErrorCode errorCode, String customMessage) {
+        return new ApiResponse<>(errorCode.getStatusCode(), customMessage, null);
     }
 
     public int getCode() { return code; }

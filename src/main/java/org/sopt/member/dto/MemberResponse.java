@@ -21,4 +21,7 @@ public record MemberResponse(
                 member.getGender()
         );
     }
+    public static MemberResponse of(Long id, String name, LocalDate birthDate, String email, Gender gender) {
+        return new MemberResponse(id, name, birthDate,email, gender);
+    }
 }
