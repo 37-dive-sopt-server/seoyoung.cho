@@ -9,5 +9,4 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     // 모든 댓글 조회 (생성 오름차순)
     List<Comment> findByArticleIdOrderByCreatedAtAsc(Long articleId);
 
-    Long countByArticleId(Long articleId);
 }
