@@ -10,7 +10,7 @@ import org.sopt.global.auth.dto.RefreshTokenRequest;
 import org.sopt.global.auth.dto.TokenResponse;
 import org.sopt.global.auth.service.AuthService;
 import org.sopt.global.dto.ApiResponse;
-import org.sopt.member.dto.MemberResponse;
+import org.sopt.domain.member.dto.MemberResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

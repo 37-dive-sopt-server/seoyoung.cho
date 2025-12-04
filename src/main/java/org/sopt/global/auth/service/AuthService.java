@@ -7,11 +7,11 @@ import org.sopt.global.auth.dto.GoogleUserInfoResponse;
 import org.sopt.global.auth.dto.TokenResponse;
 import org.sopt.global.exception.EntityNotFoundException;
 import org.sopt.global.exception.UnauthorizedException;
-import org.sopt.member.domain.Gender;
-import org.sopt.member.domain.Member;
-import org.sopt.member.domain.Provider;
-import org.sopt.member.dto.MemberResponse;
-import org.sopt.member.repository.MemberRepository;
+import org.sopt.domain.member.domain.Gender;
+import org.sopt.domain.member.domain.Member;
+import org.sopt.domain.member.domain.Provider;
+import org.sopt.domain.member.dto.MemberResponse;
+import org.sopt.domain.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
