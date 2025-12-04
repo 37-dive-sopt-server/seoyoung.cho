@@ -6,7 +6,7 @@ import java.util.List;
 
 public record CommentListResponse(
         List<CommentResponse> comments,
-        long totalCount
+        int totalCount
 ) {
     public static CommentListResponse from(List<Comment> comments) {
         List<CommentResponse> commentResponses = comments.stream()
