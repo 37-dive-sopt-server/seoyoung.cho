@@ -43,11 +43,3 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
 }
-
-sourceSets {
-    main {
-        java {
-            srcDirs += ["$buildDir/generated/sources/annotationProcessor/java/main"]
-        }
-    }
-}
