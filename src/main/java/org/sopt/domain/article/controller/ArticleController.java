@@ -5,9 +5,13 @@ import jakarta.validation.Valid;
 import org.sopt.domain.article.domain.Article;
 import org.sopt.domain.article.domain.SearchType;
 import org.sopt.domain.article.dto.ArticleCreateRequest;
+import org.sopt.domain.article.dto.ArticleDetailResponse;
 import org.sopt.domain.article.dto.ArticleListResponse;
 import org.sopt.domain.article.dto.ArticleResponse;
 import org.sopt.domain.article.service.ArticleService;
+import org.sopt.domain.comment.domain.Comment;
+import org.sopt.domain.comment.dto.CommentResponse;
+import org.sopt.domain.comment.service.CommentService;
 import org.sopt.global.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +25,12 @@ import java.util.List;
 @RequestMapping("/api/articles")
 public class ArticleController {
     private final ArticleService articleService;
+    private final CommentService commentService;
 
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService, CommentService commentService) {
         this.articleService = articleService;
+        this.commentService = commentService;
+
     }
 
     @PostMapping
@@ -41,11 +48,17 @@ public class ArticleController {
     }
 
     @GetMapping("/{articleId}")
-    public ResponseEntity<ApiResponse<ArticleResponse>> findArticleById(
+    public ResponseEntity<ApiResponse<ArticleDetailResponse>> findArticleById(
             @PathVariable Long articleId) {
 
         Article article = articleService.findById(articleId);
-        ArticleResponse response = ArticleResponse.from(article);
+
+        List<Comment> comments = commentService.getCommentsByArticleId(articleId);
+        List<CommentResponse> commentResponses = comments.stream()
+                .map(CommentResponse::from)
+                .toList();
+
+        ArticleDetailResponse response = ArticleDetailResponse.of(article, commentResponses);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

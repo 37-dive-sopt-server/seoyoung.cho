@@ -15,7 +15,7 @@ public record ArticleDetailResponse(
         String memberName,
         LocalDateTime createdAt,
         List<CommentResponse> comments,
-        int commentCount
+        Long commentCount
 ) {
     public static ArticleDetailResponse of(Article article, List<CommentResponse> comments) {
         return new ArticleDetailResponse(
@@ -26,7 +26,7 @@ public record ArticleDetailResponse(
                 article.getMember().getName(),
                 article.getCreatedAt(),
                 comments,
-                comments.size()
+                (long) comments.size()
         );
     }
 }
