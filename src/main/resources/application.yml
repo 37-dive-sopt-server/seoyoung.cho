@@ -1,0 +1,33 @@
+spring:
+  profiles:
+    active: local
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  web:
+    resources:
+      add-mappings: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 3000
+
+  cache:
+    type: redis
+    redis:
+      cache-null-values: false
+      use-key-prefix: true
+
+logging:
+  level:
+    org.sopt: INFO
+    org.hibernate.SQL: DEBUG
+    org.springframework.cache: INFO
