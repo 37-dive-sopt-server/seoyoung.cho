@@ -9,8 +9,6 @@ import org.sopt.domain.article.dto.ArticleDetailResponse;
 import org.sopt.domain.article.dto.ArticleListResponse;
 import org.sopt.domain.article.dto.ArticleResponse;
 import org.sopt.domain.article.service.ArticleService;
-import org.sopt.domain.comment.domain.Comment;
-import org.sopt.domain.comment.dto.CommentResponse;
 import org.sopt.domain.comment.service.CommentService;
 import org.sopt.global.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -25,19 +23,15 @@ import java.util.List;
 @RequestMapping("/api/articles")
 public class ArticleController {
     private final ArticleService articleService;
-    private final CommentService commentService;
 
     public ArticleController(ArticleService articleService, CommentService commentService) {
         this.articleService = articleService;
-        this.commentService = commentService;
-
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse<ArticleResponse>> createArticle(
             @AuthenticationPrincipal Long memberId,
             @Valid @RequestBody ArticleCreateRequest request) {
-
 
         Article newArticle = articleService.create(memberId, request);
         ArticleResponse response = ArticleResponse.from(newArticle);
@@ -51,14 +45,8 @@ public class ArticleController {
     public ResponseEntity<ApiResponse<ArticleDetailResponse>> findArticleById(
             @PathVariable Long articleId) {
 
-        Article article = articleService.findById(articleId);
-
-        List<Comment> comments = commentService.getCommentsByArticleId(articleId);
-        List<CommentResponse> commentResponses = comments.stream()
-                .map(CommentResponse::from)
-                .toList();
-
-        ArticleDetailResponse response = ArticleDetailResponse.of(article, commentResponses);
+        // Service가 캐싱된 DTO 바로 반환
+        ArticleDetailResponse response = articleService.findById(articleId);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
@@ -66,8 +54,7 @@ public class ArticleController {
     @GetMapping
     public ResponseEntity<ApiResponse<ArticleListResponse>> findAllArticles() {
 
-        List<Article> articles = articleService.findAll();
-        ArticleListResponse response = ArticleListResponse.from(articles);
+        ArticleListResponse response = articleService.findAll();
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

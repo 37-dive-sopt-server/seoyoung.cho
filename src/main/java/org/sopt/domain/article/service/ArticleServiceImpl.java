@@ -3,7 +3,12 @@ package org.sopt.domain.article.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sopt.domain.article.domain.SearchType;
+import org.sopt.domain.article.dto.ArticleDetailResponse;
+import org.sopt.domain.article.dto.ArticleListResponse;
 import org.sopt.domain.article.service.validator.ArticleValidator;
+import org.sopt.domain.comment.domain.Comment;
+import org.sopt.domain.comment.dto.CommentResponse;
+import org.sopt.domain.comment.service.CommentService;
 import org.sopt.global.auth.service.AuthService;
 import org.sopt.global.exception.EntityNotFoundException;
 import org.sopt.domain.article.domain.Article;
@@ -26,10 +31,11 @@ import static org.sopt.global.constants.CacheConstants.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ArticleServiceImpl implements ArticleService {
+
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
     private final ArticleValidator articleValidator;
-    private final AuthService authService;
+    private final CommentService commentService;
 
     @Override
     @Transactional
@@ -52,19 +58,28 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Cacheable(value = ARTICLE_DETAIL, key = "#articleId")
-    public Article findById(Long articleId) {
+    public ArticleDetailResponse findById(Long articleId) {
         log.info("게시글 조회 - articleId: {} (Cache Miss, DB 조회)", articleId);
 
-        return articleRepository.findById(articleId)
+        Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다."));
+
+        List<Comment> comments = commentService.getCommentsByArticleId(articleId);
+        List<CommentResponse> commentResponses = comments.stream()
+                .map(CommentResponse::from)
+                .toList();
+
+        return ArticleDetailResponse.of(article, commentResponses);
     }
 
     @Override
     @Cacheable(value = ARTICLES_LIST)
-    public List<Article> findAll() {
+    public ArticleListResponse findAll() {
         log.info("게시글 목록 조회 (Cache Miss, DB 조회)");
 
-        return articleRepository.findAll();
+        List<Article> articles = articleRepository.findAll();
+
+        return ArticleListResponse.from(articles);
     }
 
     @Override
