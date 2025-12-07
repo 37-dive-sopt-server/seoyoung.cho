@@ -12,6 +12,7 @@ import org.sopt.domain.member.domain.Member;
 import org.sopt.domain.member.domain.Provider;
 import org.sopt.domain.member.dto.MemberResponse;
 import org.sopt.domain.member.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,9 @@ public class AuthService {
     // 소셜 로그인 기본값
     private static final LocalDate DEFAULT_BIRTHDATE = LocalDate.of(2000, 1, 1);
     private static final Gender DEFAULT_GENDER = Gender.OTHER;
-    private static final long REFRESH_TOKEN_EXPIRES_IN_SECONDS = 1209600;
+
+    @Value("${jwt.refresh-token-expire-time}")
+    private long refreshTokenExpireTime;
 
     /* 이메일과 비밀번호로 로그인 */
     public TokenResponse login(String email, String password) {
@@ -106,18 +109,6 @@ public class AuthService {
         return saved;
     }
 
-    public MemberResponse authenticateWithJwt(String authorization) {
-        log.debug("Authorization header: {}", authorization);
-
-        String token = jwtService.extractTokenFromHeader(authorization);
-        log.debug("Extracted token: {}", token);
-
-        Long memberId = jwtService.verifyAndGetMemberId(token);
-        log.debug("Member ID: {}", memberId);
-
-        return getMemberById(memberId);
-    }
-
     public MemberResponse getMemberById(Long memberId) {
         if (memberId == null) {
             throw new IllegalArgumentException("로그인되어 있지 않습니다.");
@@ -129,22 +120,14 @@ public class AuthService {
 
     @Transactional
     public TokenResponse refreshAccessToken(String refreshToken) {
-        log.info("Access Token 재발급 시작");
+        log.info("🔄 토큰 갱신 시작");
 
         Long memberId = refreshTokenService.validateAndGetMemberId(refreshToken);
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
 
-        String newAccessToken = jwtService.generateAccessToken(member.getId(), member.getEmail());
-
-        // RTR
-        String newRefreshToken = jwtService.generateRefreshToken(member.getId());
-        refreshTokenService.saveOrUpdate(member.getId(), newRefreshToken, REFRESH_TOKEN_EXPIRES_IN_SECONDS);
-
-        log.info("✅ Access Token 재발급 성공 - memberId: {}", memberId);
-
-        return TokenResponse.of(newAccessToken, newRefreshToken);
+        return generateTokens(member);
     }
 
     @Transactional
@@ -153,9 +136,12 @@ public class AuthService {
         log.info("로그아웃 완료 - memberId: {}", memberId);
     }
 
-    @Transactional
-    public void saveRefreshToken(Long memberId, String refreshToken, long expiresInSeconds) {
-        refreshTokenService.saveOrUpdate(memberId, refreshToken, expiresInSeconds);
+    @Transactional(readOnly = true)
+    public MemberResponse getMemberInfo(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
+
+        return MemberResponse.from(member);
     }
 
     private TokenResponse generateTokens(Member member) {
@@ -164,7 +150,8 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(member.getId(), member.getEmail());
         String refreshToken = jwtService.generateRefreshToken(member.getId());
 
-        refreshTokenService.saveOrUpdate(member.getId(), refreshToken, REFRESH_TOKEN_EXPIRES_IN_SECONDS);
+        long expiresInSeconds = refreshTokenExpireTime / 1000;
+        refreshTokenService.saveOrUpdate(member.getId(), refreshToken, expiresInSeconds);
 
         log.info("토큰 발급 완료 - memberId: {}", member.getId());
 

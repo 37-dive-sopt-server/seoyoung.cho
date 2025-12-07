@@ -20,32 +20,30 @@ import org.springframework.stereotype.Service;
 public class JwtService {
 
     private final Algorithm algorithm;
-    private final long defaultExpiresInSeconds;
-    private static final long REFRESH_TOKEN_EXPIRES_IN_SECONDS = 1209600; // 14일
+    private final long accessTokenExpireSeconds;
+    private final long refreshTokenExpireSeconds;
 
     public JwtService(
             @Value("${security.jwt.secret}") String secret,
-            @Value("${security.jwt.expires-in-seconds:3600}") long defaultExpiresInSeconds
+            @Value("${jwt.access-token-expire-time}") long accessTokenExpireTime,
+            @Value("${jwt.refresh-token-expire-time}") long refreshTokenExpireTime
     ) {
         this.algorithm = Algorithm.HMAC256(secret);
-        this.defaultExpiresInSeconds = defaultExpiresInSeconds;
+        // 밀리초 → 초
+        this.accessTokenExpireSeconds = accessTokenExpireTime / 1000;
+        this.refreshTokenExpireSeconds = refreshTokenExpireTime / 1000;
     }
 
     public String generateAccessToken(Long memberId, String email) {
-        return generateToken(memberId, email, defaultExpiresInSeconds);
+        return generateToken(memberId, email, accessTokenExpireSeconds);
     }
 
     public String generateRefreshToken(Long memberId) {
-        return generateToken(memberId, null, REFRESH_TOKEN_EXPIRES_IN_SECONDS);
+        return generateToken(memberId, null, refreshTokenExpireSeconds);
     }
 
-    // 기본 만료 시간으로 JWT 토큰 생성
-    public String generateToken(Long memberId, String email) {
-        return generateToken(memberId, email, defaultExpiresInSeconds);
-    }
-
-    // 커스텀 만료 시간으로 JWT 토큰 생성
-    public String generateToken(Long memberId, String email, long expiresInSeconds) {
+    // JWT 토큰 생성
+    private String generateToken(Long memberId, String email, long expiresInSeconds) {
         Instant now = Instant.now();
         Instant exp = now.plusSeconds(expiresInSeconds);
 
