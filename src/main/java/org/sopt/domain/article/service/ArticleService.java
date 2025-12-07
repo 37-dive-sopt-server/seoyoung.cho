@@ -1,16 +1,14 @@
 package org.sopt.domain.article.service;
 
-import org.sopt.domain.article.domain.Article;
 import org.sopt.domain.article.domain.SearchType;
 import org.sopt.domain.article.dto.ArticleCreateRequest;
 import org.sopt.domain.article.dto.ArticleDetailResponse;
 import org.sopt.domain.article.dto.ArticleListResponse;
-
-import java.util.List;
+import org.sopt.domain.article.dto.ArticleResponse;
 
 public interface ArticleService {
-    Article create(Long memberId, ArticleCreateRequest request);
+    ArticleResponse create(Long memberId, ArticleCreateRequest request);
     ArticleDetailResponse findById(Long articleId);
     ArticleListResponse findAll();
-    List<Article> search(SearchType title, String memberName);
+    ArticleListResponse search(SearchType title, String memberName);
 }

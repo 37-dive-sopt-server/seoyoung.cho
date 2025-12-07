@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.sopt.domain.article.domain.SearchType;
 import org.sopt.domain.article.dto.ArticleDetailResponse;
 import org.sopt.domain.article.dto.ArticleListResponse;
+import org.sopt.domain.article.dto.ArticleResponse;
 import org.sopt.domain.article.service.validator.ArticleValidator;
 import org.sopt.domain.comment.domain.Comment;
 import org.sopt.domain.comment.dto.CommentResponse;
@@ -40,20 +41,17 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional
     @CacheEvict(value = ARTICLES_LIST, allEntries = true)
-    public Article create(Long memberId, ArticleCreateRequest request) {
+    public ArticleResponse create(Long memberId, ArticleCreateRequest request) {
 
         articleValidator.validateNewArticle(request);
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 회원을 찾을 수 없습니다."));
 
-        Article newArticle = Article.create(
-                member,
-                request.title(),
-                request.content(),
-                request.tag()
-        );
-        return articleRepository.save(newArticle);
+        Article newArticle = Article.create(member, request.title(), request.content(), request.tag());
+        Article savedArticle = articleRepository.save(newArticle);
+
+        return ArticleResponse.from(savedArticle);
     }
 
     @Override
@@ -83,11 +81,13 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public List<Article> search(SearchType type, String keyword) {
+    public ArticleListResponse search(SearchType type, String keyword) {
         if (keyword == null || keyword.isBlank()) {
-            return new ArrayList<>();
+            return ArticleListResponse.from(new ArrayList<>());
         }
 
-        return articleRepository.search(type, keyword);
+        List<Article> articles = articleRepository.search(type, keyword);
+
+        return ArticleListResponse.from(articles);
     }
 }
