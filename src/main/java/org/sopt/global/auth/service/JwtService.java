@@ -24,7 +24,7 @@ public class JwtService {
     private final long refreshTokenExpireSeconds;
 
     public JwtService(
-            @Value("${security.jwt.secret}") String secret,
+            @Value("${jwt.secret}") String secret,
             @Value("${jwt.access-token-expire-time}") long accessTokenExpireTime,
             @Value("${jwt.refresh-token-expire-time}") long refreshTokenExpireTime
     ) {
