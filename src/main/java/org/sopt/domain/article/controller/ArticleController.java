@@ -33,8 +33,7 @@ public class ArticleController {
             @AuthenticationPrincipal Long memberId,
             @Valid @RequestBody ArticleCreateRequest request) {
 
-        Article newArticle = articleService.create(memberId, request);
-        ArticleResponse response = ArticleResponse.from(newArticle);
+        ArticleResponse response = articleService.create(memberId, request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -64,8 +63,8 @@ public class ArticleController {
             @RequestParam SearchType type, // 제목 또는 작성자
             @RequestParam String keyword
     ) {
-        List<Article> articles = articleService.search(type, keyword);
-        ArticleListResponse response = ArticleListResponse.from(articles);
+        ArticleListResponse response = articleService.search(type, keyword);
+
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
