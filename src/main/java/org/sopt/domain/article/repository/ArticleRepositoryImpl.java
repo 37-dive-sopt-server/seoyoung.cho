@@ -1,8 +1,5 @@
 package org.sopt.domain.article.repository;
 
-import static org.sopt.domain.article.domain.QArticle.*;
-import static org.sopt.domain.member.domain.QMember.*;
-
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +11,9 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
+import static org.sopt.domain.article.domain.QArticle.article;
+import static org.sopt.domain.member.domain.QMember.member;
 
 @Repository
 @RequiredArgsConstructor

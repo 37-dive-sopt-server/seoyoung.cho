@@ -1,6 +1,7 @@
 package org.sopt.domain.comment.dto;
 
 import org.sopt.domain.comment.domain.Comment;
+
 import java.time.LocalDateTime;
 
 public record CommentResponse(

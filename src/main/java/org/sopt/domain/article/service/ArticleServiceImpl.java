@@ -2,22 +2,21 @@ package org.sopt.domain.article.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.sopt.domain.article.domain.Article;
 import org.sopt.domain.article.domain.SearchType;
+import org.sopt.domain.article.dto.ArticleCreateRequest;
 import org.sopt.domain.article.dto.ArticleDetailResponse;
 import org.sopt.domain.article.dto.ArticleListResponse;
 import org.sopt.domain.article.dto.ArticleResponse;
+import org.sopt.domain.article.repository.ArticleRepository;
 import org.sopt.domain.article.service.validator.ArticleValidator;
 import org.sopt.domain.comment.domain.Comment;
 import org.sopt.domain.comment.dto.CommentResponse;
 import org.sopt.domain.comment.repository.CommentRepository;
 import org.sopt.domain.comment.service.CommentService;
-import org.sopt.global.auth.service.AuthService;
-import org.sopt.global.exception.EntityNotFoundException;
-import org.sopt.domain.article.domain.Article;
-import org.sopt.domain.article.dto.ArticleCreateRequest;
-import org.sopt.domain.article.repository.ArticleRepository;
 import org.sopt.domain.member.domain.Member;
 import org.sopt.domain.member.repository.MemberRepository;
+import org.sopt.global.exception.EntityNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -28,7 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.sopt.global.constants.CacheConstants.*;
+import static org.sopt.global.constants.CacheConstants.ARTICLES_LIST;
+import static org.sopt.global.constants.CacheConstants.ARTICLE_DETAIL;
 
 @Slf4j
 @Service

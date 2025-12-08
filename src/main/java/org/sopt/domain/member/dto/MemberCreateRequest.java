@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.sopt.global.deserializer.GenderDeserializer;
 import org.sopt.domain.member.domain.Gender;
+import org.sopt.global.deserializer.GenderDeserializer;
 
 import java.time.LocalDate;
 

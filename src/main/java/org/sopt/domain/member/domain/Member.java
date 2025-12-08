@@ -1,17 +1,16 @@
 package org.sopt.domain.member.domain;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.sopt.domain.article.domain.Article;
+
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
