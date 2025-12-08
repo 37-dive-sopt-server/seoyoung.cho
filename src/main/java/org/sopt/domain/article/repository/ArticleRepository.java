@@ -1,6 +1,8 @@
 package org.sopt.domain.article.repository;
 
 import org.sopt.domain.article.domain.Article;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,5 +16,10 @@ public interface ArticleRepository  extends JpaRepository<Article, Long>, Articl
     @EntityGraph(attributePaths = {"member"})
     @Override
     List<Article> findAll();
+
+    // 페이지네이션 지원 - N+1 해결
+    @EntityGraph(attributePaths = {"member"})
+    @Override
+    Page<Article> findAll(Pageable pageable);
 }
 

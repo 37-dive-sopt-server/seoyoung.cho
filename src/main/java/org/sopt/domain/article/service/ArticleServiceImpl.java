@@ -9,6 +9,7 @@ import org.sopt.domain.article.dto.ArticleResponse;
 import org.sopt.domain.article.service.validator.ArticleValidator;
 import org.sopt.domain.comment.domain.Comment;
 import org.sopt.domain.comment.dto.CommentResponse;
+import org.sopt.domain.comment.repository.CommentRepository;
 import org.sopt.domain.comment.service.CommentService;
 import org.sopt.global.auth.service.AuthService;
 import org.sopt.global.exception.EntityNotFoundException;
@@ -19,6 +20,8 @@ import org.sopt.domain.member.domain.Member;
 import org.sopt.domain.member.repository.MemberRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +40,7 @@ public class ArticleServiceImpl implements ArticleService {
     private final MemberRepository memberRepository;
     private final ArticleValidator articleValidator;
     private final CommentService commentService;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -67,7 +71,10 @@ public class ArticleServiceImpl implements ArticleService {
                 .map(CommentResponse::from)
                 .toList();
 
-        return ArticleDetailResponse.of(article, commentResponses);
+        // 댓글 개수 카운트 쿼리로 최적화
+        long commentCount = commentRepository.countByArticleId(articleId);
+
+        return ArticleDetailResponse.of(article, commentResponses, commentCount);
     }
 
     @Override
@@ -89,5 +96,22 @@ public class ArticleServiceImpl implements ArticleService {
         List<Article> articles = articleRepository.search(type, keyword);
 
         return ArticleListResponse.from(articles);
+    }
+
+    @Override
+    public Page<Article> findAll(Pageable pageable) {
+        log.info("게시글 목록 조회 (페이지네이션) - page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
+        return articleRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Article> search(SearchType type, String keyword, Pageable pageable) {
+        log.info("게시글 검색 (페이지네이션) - type: {}, keyword: {}, page: {}", type, keyword, pageable.getPageNumber());
+
+        if (keyword == null || keyword.isBlank()) {
+            return Page.empty(pageable);
+        }
+
+        return articleRepository.search(type, keyword, pageable);
     }
 }

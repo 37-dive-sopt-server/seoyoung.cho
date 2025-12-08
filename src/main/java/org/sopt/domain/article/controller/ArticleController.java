@@ -11,12 +11,17 @@ import org.sopt.domain.article.dto.ArticleResponse;
 import org.sopt.domain.article.service.ArticleService;
 import org.sopt.domain.comment.service.CommentService;
 import org.sopt.global.dto.ApiResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Tag(name = "Article", description = "아티클 API")
 @RestController
@@ -66,6 +71,25 @@ public class ArticleController {
         ArticleListResponse response = articleService.search(type, keyword);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    // 페이지네이션 지원 API
+    @GetMapping("/page")
+    public ResponseEntity<ApiResponse<Page<Article>>> findAllArticlesWithPagination(
+            @PageableDefault(size = 10, sort = "createdAt", direction = DESC) Pageable pageable
+    ) {
+        Page<Article> articles = articleService.findAll(pageable);
+        return ResponseEntity.ok(ApiResponse.ok(articles));
+    }
+
+    @GetMapping("/page/search")
+    public ResponseEntity<ApiResponse<Page<Article>>> searchArticlesWithPagination(
+            @RequestParam SearchType type,
+            @RequestParam String keyword,
+            @PageableDefault(size = 10, sort = "createdAt", direction = DESC) Pageable pageable
+    ) {
+        Page<Article> articles = articleService.search(type, keyword, pageable);
+        return ResponseEntity.ok(ApiResponse.ok(articles));
     }
 
 }
