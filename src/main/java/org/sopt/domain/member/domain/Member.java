@@ -17,7 +17,9 @@ import org.sopt.domain.article.domain.Article;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "members", indexes = {
-        @Index(name = "idx_member_email", columnList = "email", unique = true)
+        @Index(name = "idx_member_email", columnList = "email", unique = true),
+        @Index(name = "idx_member_provider_id", columnList = "provider, providerId", unique = true),
+        @Index(name = "idx_member_name", columnList = "name")
 })
 public class Member {
 

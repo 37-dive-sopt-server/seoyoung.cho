@@ -14,7 +14,10 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "comments")
+@Table(name = "comments", indexes = {
+        @Index(name = "idx_comment_article_created", columnList = "article_id, created_at"),
+        @Index(name = "idx_comment_member_id", columnList = "member_id")
+})
 public class Comment {
 
     @Id
