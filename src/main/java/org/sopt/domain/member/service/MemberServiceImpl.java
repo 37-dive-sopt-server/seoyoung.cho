@@ -6,10 +6,12 @@ import org.sopt.global.exception.EntityNotFoundException;
 import org.sopt.domain.member.repository.MemberRepository;
 import org.sopt.domain.member.service.validator.MemberValidator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final MemberValidator memberValidator;
@@ -20,6 +22,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public Member join(MemberCreateRequest request) {
         Member member = Member.createLocalMember(
                 request.name(),
@@ -45,6 +48,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public void deleteMember(Long memberId) {
         Member member = this.findOne(memberId);
         memberRepository.deleteById(member.getId());
