@@ -17,7 +17,7 @@ public record ArticleDetailResponse(
         List<CommentResponse> comments,
         Long commentCount
 ) {
-    public static ArticleDetailResponse of(Article article, List<CommentResponse> comments) {
+    public static ArticleDetailResponse of(Article article, List<CommentResponse> comments, long commentCount) {
         return new ArticleDetailResponse(
                 article.getId(),
                 article.getTitle(),
@@ -26,7 +26,7 @@ public record ArticleDetailResponse(
                 article.getMember().getName(),
                 article.getCreatedAt(),
                 comments,
-                (long) comments.size()
+                commentCount
         );
     }
 }
