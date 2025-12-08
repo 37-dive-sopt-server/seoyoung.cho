@@ -3,6 +3,7 @@ package org.sopt.domain.article.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.article.domain.Article;
 import org.sopt.domain.article.domain.SearchType;
 import org.sopt.domain.article.dto.ArticleCreateRequest;
@@ -25,12 +26,10 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @Tag(name = "Article", description = "아티클 API")
 @RestController
 @RequestMapping("/api/articles")
+@RequiredArgsConstructor
 public class ArticleController {
-    private final ArticleService articleService;
 
-    public ArticleController(ArticleService articleService, CommentService commentService) {
-        this.articleService = articleService;
-    }
+    private final ArticleService articleService;
 
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
     @PostMapping

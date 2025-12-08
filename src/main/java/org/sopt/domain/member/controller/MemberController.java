@@ -3,6 +3,7 @@ package org.sopt.domain.member.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.member.domain.Member;
 import org.sopt.domain.member.dto.MemberCreateRequest;
 import org.sopt.domain.member.dto.MemberDeleteResponse;
@@ -24,13 +25,10 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @Tag(name = "Members", description = "회원 API")
 @RestController
 @RequestMapping("/api/members")
+@RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
-
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
 
     @Operation(summary = "회원 가입", description = "새로운 회원을 등록합니다.")
     @PostMapping
