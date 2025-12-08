@@ -1,5 +1,6 @@
 package org.sopt.domain.article.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.sopt.domain.article.domain.Article;
@@ -31,6 +32,7 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
+    @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
     @PostMapping
     public ResponseEntity<ApiResponse<ArticleResponse>> createArticle(
             @AuthenticationPrincipal Long memberId,
@@ -43,6 +45,7 @@ public class ArticleController {
                 .body(ApiResponse.created(response));
     }
 
+    @Operation(summary = "게시글 상세 조회", description = "특정 게시글의 상세 정보를 조회합니다.")
     @GetMapping("/{articleId}")
     public ResponseEntity<ApiResponse<ArticleDetailResponse>> findArticleById(
             @PathVariable Long articleId) {
@@ -53,6 +56,7 @@ public class ArticleController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(summary = "게시글 목록 조회", description = "모든 게시글 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<ArticleListResponse>> findAllArticles() {
 
@@ -61,6 +65,7 @@ public class ArticleController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(summary = "게시글 검색", description = "제목 또는 작성자 이름으로 게시글을 검색합니다.")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<ArticleListResponse>> searchArticles(
             @RequestParam SearchType type, // 제목 또는 작성자
@@ -71,7 +76,7 @@ public class ArticleController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
-    // 페이지네이션 지원 API
+    @Operation(summary = "게시글 목록 조회 (페이지네이션)", description = "게시글 목록을 페이지네이션하여 조회합니다.")
     @GetMapping("/page")
     public ResponseEntity<ApiResponse<Page<Article>>> findAllArticlesWithPagination(
             @PageableDefault(size = 10, sort = "createdAt", direction = DESC) Pageable pageable
@@ -80,6 +85,7 @@ public class ArticleController {
         return ResponseEntity.ok(ApiResponse.ok(articles));
     }
 
+    @Operation(summary = "게시글 검색 (페이지네이션)", description = "게시글을 검색하고 페이지네이션하여 조회합니다.")
     @GetMapping("/page/search")
     public ResponseEntity<ApiResponse<Page<Article>>> searchArticlesWithPagination(
             @RequestParam SearchType type,

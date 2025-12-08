@@ -1,5 +1,6 @@
 package org.sopt.domain.member.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.sopt.domain.member.domain.Member;
@@ -31,6 +32,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @Operation(summary = "회원 가입", description = "새로운 회원을 등록합니다.")
     @PostMapping
     public ResponseEntity<ApiResponse<MemberResponse>> createMember(@Valid @RequestBody MemberCreateRequest request) {
         Member newMember = memberService.join(request);
@@ -41,6 +43,7 @@ public class MemberController {
                 .body(ApiResponse.created(response));
     }
 
+    @Operation(summary = "회원 조회", description = "특정 회원의 정보를 조회합니다.")
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<MemberResponse>> findMemberById(@PathVariable Long userId) {
         Member member = memberService.findOne(userId);
@@ -49,6 +52,7 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(summary = "회원 목록 조회", description = "모든 회원 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<MemberListResponse>> getAllMembers() {
         List<Member> members = memberService.findAllMembers();
@@ -57,6 +61,7 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(summary = "회원 삭제", description = "특정 회원을 삭제합니다.")
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse<MemberDeleteResponse>> deleteMember(@PathVariable Long userId) {
         memberService.deleteMember(userId);
@@ -65,7 +70,7 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
-    // 페이지네이션 지원 API
+    @Operation(summary = "회원 목록 조회 (페이지네이션)", description = "회원 목록을 페이지네이션하여 조회합니다.")
     @GetMapping("/page")
     public ResponseEntity<ApiResponse<Page<Member>>> getAllMembersWithPagination(
             @PageableDefault(size = 10, sort = "id", direction = DESC) Pageable pageable
