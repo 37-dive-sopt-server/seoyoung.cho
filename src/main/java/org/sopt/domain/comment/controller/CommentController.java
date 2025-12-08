@@ -10,12 +10,17 @@ import org.sopt.domain.comment.dto.CommentRequest;
 import org.sopt.domain.comment.dto.CommentResponse;
 import org.sopt.domain.comment.service.CommentService;
 import org.sopt.global.dto.ApiResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
 @Tag(name = "Comments", description = "댓글 API")
 @RestController
@@ -75,5 +80,15 @@ public class CommentController {
         commentService.deleteComment(articleId, commentId, memberId);
 
         return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @Operation(summary = "댓글 목록 조회 (페이지네이션)", description = "특정 게시글의 댓글을 페이지네이션하여 조회합니다.")
+    @GetMapping("/page")
+    public ResponseEntity<ApiResponse<Page<Comment>>> getCommentsWithPagination(
+            @PathVariable Long articleId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = ASC) Pageable pageable
+    ) {
+        Page<Comment> comments = commentService.getCommentsByArticleId(articleId, pageable);
+        return ResponseEntity.ok(ApiResponse.ok(comments));
     }
 }

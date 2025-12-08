@@ -12,6 +12,8 @@ import org.sopt.domain.comment.repository.CommentRepository;
 import org.sopt.domain.member.domain.Member;
 import org.sopt.domain.member.repository.MemberRepository;
 import org.sopt.global.exception.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,5 +112,14 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return comment;
+    }
+
+    @Override
+    public Page<Comment> getCommentsByArticleId(Long articleId, Pageable pageable) {
+        log.info("📋 댓글 목록 조회 (페이지네이션) - articleId: {}, page: {}", articleId, pageable.getPageNumber());
+
+        validateArticleExists(articleId);
+
+        return commentRepository.findByArticleIdOrderByCreatedAtAsc(articleId, pageable);
     }
 }
