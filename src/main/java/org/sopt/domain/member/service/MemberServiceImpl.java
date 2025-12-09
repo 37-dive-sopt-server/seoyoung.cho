@@ -42,7 +42,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member findOne(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 회원을 찾을 수 없습니다."));
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     @Override

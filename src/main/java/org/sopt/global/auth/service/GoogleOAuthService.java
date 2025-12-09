@@ -56,7 +56,7 @@ public class GoogleOAuthService {
 
         } catch (Exception e) {
             log.error("구글 토큰 발급 실패: {}", e.getMessage());
-            throw new UnauthorizedException("구글 토큰 발급에 실패했습니다.");
+            throw new UnauthorizedException();
         }
     }
 
@@ -75,7 +75,7 @@ public class GoogleOAuthService {
 
         } catch (Exception e) {
             log.error("구글 사용자 정보 조회 실패: {}", e.getMessage());
-            throw new UnauthorizedException("구글 사용자 정보 조회에 실패했습니다.");
+            throw new UnauthorizedException();
         }
     }
 }

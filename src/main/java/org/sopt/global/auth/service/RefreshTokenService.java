@@ -49,14 +49,14 @@ public class RefreshTokenService {
         Long memberId = jwtService.verifyAndGetMemberId(token);
 
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new UnauthorizedException("유효하지 않은 Refresh Token입니다."));
+                .orElseThrow(UnauthorizedException::new);
 
         if (refreshToken.isExpired()) {
-            throw new InvalidTokenException("만료된 Refresh Token입니다.");
+            throw new InvalidTokenException();
         }
 
         if (!refreshToken.getMemberId().equals(memberId)) {
-            throw new InvalidTokenException("토큰 정보가 일치하지 않습니다.");
+            throw new InvalidTokenException();
         }
 
         return memberId;

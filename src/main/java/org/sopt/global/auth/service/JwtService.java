@@ -61,11 +61,11 @@ public class JwtService {
 
     public String extractTokenFromHeader(String authorization) {
         if (authorization == null || authorization.isBlank()) {
-            throw new UnauthorizedException("Authorization 헤더가 없습니다.");
+            throw new UnauthorizedException();
         }
 
         if (!authorization.startsWith("Bearer ")) {
-            throw new UnauthorizedException("Bearer 토큰 형식이 아닙니다.");
+            throw new UnauthorizedException();
         }
 
         return authorization.substring("Bearer ".length()).trim();
@@ -80,27 +80,27 @@ public class JwtService {
             try {
                 return Long.parseLong(sub);
             } catch (NumberFormatException e) {
-                throw new InvalidTokenException("JWT의 회원 정보가 올바르지 않습니다.");
+                throw new InvalidTokenException();
             }
         } catch (TokenExpiredException e) {
-            throw new ExpiredTokenException("토큰이 만료되었습니다.");
+            throw new ExpiredTokenException();
         } catch (JWTVerificationException e) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
+            throw new InvalidTokenException();
         }
     }
 
     public String verifyAndGetEmail(String token) {
         if (token == null || token.isBlank()) {
-            throw new InvalidTokenException("토큰이 없습니다.");
+            throw new InvalidTokenException();
         }
 
         try {
             DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
             return jwt.getClaim("email").asString();
         } catch (TokenExpiredException e) {
-            throw new ExpiredTokenException("토큰이 만료되었습니다.");
+            throw new ExpiredTokenException();
         } catch (JWTVerificationException e) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
+            throw new InvalidTokenException();
         }
     }
 }

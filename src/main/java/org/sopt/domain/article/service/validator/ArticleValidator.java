@@ -18,7 +18,7 @@ public class ArticleValidator {
 
     private void validateDuplicateTitle(String title) {
         if (articleRepository.existsByTitle(title)) {
-            throw new DuplicateArticleTitleException("이미 존재하는 게시글 제목입니다.");
+            throw new DuplicateArticleTitleException();
         }
     }
 }

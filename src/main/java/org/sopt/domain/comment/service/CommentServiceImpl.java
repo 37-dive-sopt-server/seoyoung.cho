@@ -82,33 +82,33 @@ public class CommentServiceImpl implements CommentService {
     /* 게시글 조회 */
     private Article findArticleById(Long articleId) {
         return articleRepository.findById(articleId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     /* 회원 조회 */
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 회원을 찾을 수 없습니다."));
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     /* 게시글 존재 확인 */
     private void validateArticleExists(Long articleId) {
         if (!articleRepository.existsById(articleId)) {
-            throw new EntityNotFoundException("해당 게시글을 찾을 수 없습니다.");
+            throw new EntityNotFoundException();
         }
     }
 
     /* 댓글 조회 및 권한 검증 */
     private Comment findCommentByIdAndValidate(Long commentId, Long articleId, Long memberId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException("해당 댓글을 찾을 수 없습니다."));
+                .orElseThrow(CommentNotFoundException::new);
 
         if (!comment.getArticle().getId().equals(articleId)) {
-            throw new CommentNotFoundException("해당 게시글의 댓글이 아닙니다.");
+            throw new CommentNotFoundException();
         }
 
         if (!comment.isWrittenBy(memberId)) {
-            throw new CommentForbiddenException("본인이 작성한 댓글만 수정/삭제할 수 있습니다.");
+            throw new CommentForbiddenException();
         }
 
         return comment;

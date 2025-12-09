@@ -42,9 +42,9 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 조회", description = "특정 회원의 정보를 조회합니다.")
-    @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<MemberResponse>> findMemberById(@PathVariable Long userId) {
-        Member member = memberService.findOne(userId);
+    @GetMapping("/{memberId}")
+    public ResponseEntity<ApiResponse<MemberResponse>> findMemberById(@PathVariable Long memberId) {
+        Member member = memberService.findOne(memberId);
         MemberResponse response = MemberResponse.from(member);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
@@ -60,10 +60,10 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 삭제", description = "특정 회원을 삭제합니다.")
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse<MemberDeleteResponse>> deleteMember(@PathVariable Long userId) {
-        memberService.deleteMember(userId);
-        MemberDeleteResponse response = MemberDeleteResponse.of(userId);
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<ApiResponse<MemberDeleteResponse>> deleteMember(@PathVariable Long memberId) {
+        memberService.deleteMember(memberId);
+        MemberDeleteResponse response = MemberDeleteResponse.of(memberId);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

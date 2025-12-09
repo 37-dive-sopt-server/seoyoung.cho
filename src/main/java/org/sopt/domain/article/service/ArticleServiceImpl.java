@@ -50,7 +50,7 @@ public class ArticleServiceImpl implements ArticleService {
         articleValidator.validateNewArticle(request);
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 회원을 찾을 수 없습니다."));
+                .orElseThrow(EntityNotFoundException::new);
 
         Article newArticle = Article.create(member, request.title(), request.content(), request.tag());
         Article savedArticle = articleRepository.save(newArticle);
@@ -64,7 +64,7 @@ public class ArticleServiceImpl implements ArticleService {
         log.info("게시글 조회 - articleId: {} (Cache Miss, DB 조회)", articleId);
 
         Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다."));
+                .orElseThrow(EntityNotFoundException::new);
 
         List<Comment> comments = commentService.getCommentsByArticleId(articleId);
         List<CommentResponse> commentResponses = comments.stream()

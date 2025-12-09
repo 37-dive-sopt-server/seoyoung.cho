@@ -41,15 +41,15 @@ public class AuthService {
     public TokenResponse login(String email, String password) {
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다."));
+                .orElseThrow(UnauthorizedException::new);
 
 
         if (member.isSocialMember()) {
-            throw new UnauthorizedException("소셜 로그인 회원입니다. " + member.getProvider() + " 로그인을 이용해주세요.");
+            throw new UnauthorizedException();
         }
 
         if (member.getPassword() == null || !member.getPassword().equals(password)) {
-            throw new UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다.");
+            throw new UnauthorizedException();
         }
 
         return generateTokens(member);
@@ -78,7 +78,7 @@ public class AuthService {
 
         // 기존 회원인데 다른 Provider인 경우 예외
         if (member.getProvider() != Provider.GOOGLE) {
-            throw new UnauthorizedException("이미 " + member.getProvider() + " 계정으로 가입된 이메일입니다.");
+            throw new UnauthorizedException();
         }
 
         log.info("구글 소셜 로그인 성공 - email: {}", member.getEmail());
@@ -111,10 +111,10 @@ public class AuthService {
 
     public MemberResponse getMemberById(Long memberId) {
         if (memberId == null) {
-            throw new IllegalArgumentException("로그인되어 있지 않습니다.");
+            throw new UnauthorizedException();
         }
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+                .orElseThrow(EntityNotFoundException::new);
         return MemberResponse.from(member);
     }
 
@@ -125,7 +125,7 @@ public class AuthService {
         Long memberId = refreshTokenService.validateAndGetMemberId(refreshToken);
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
+                .orElseThrow(EntityNotFoundException::new);
 
         return generateTokens(member);
     }
@@ -139,7 +139,7 @@ public class AuthService {
     @Transactional(readOnly = true)
     public MemberResponse getMemberInfo(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
+                .orElseThrow(EntityNotFoundException::new);
 
         return MemberResponse.from(member);
     }

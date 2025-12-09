@@ -21,14 +21,14 @@ public class MemberValidator {
 
     private void validateAge(Member member) {
         if (member.getAge() < MINIMUM_AGE_FOR_REGISTRATION) {
-            throw new MemberAgeException("만 " + MINIMUM_AGE_FOR_REGISTRATION + "세 미만은 회원으로 가입할 수 없습니다.");
+            throw new MemberAgeException();
         }
     }
 
     private void validateDuplicateMember(Member member) {
         memberRepository.findByEmail(member.getEmail())
                 .ifPresent(m -> {
-                    throw new DuplicateMemberException("이미 존재하는 이메일입니다.");
+                    throw new DuplicateMemberException();
                 });
     }
 }
