@@ -42,12 +42,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
 
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs += ["$buildDir/generated/sources/annotationProcessor/java/main"]
-        }
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
 }

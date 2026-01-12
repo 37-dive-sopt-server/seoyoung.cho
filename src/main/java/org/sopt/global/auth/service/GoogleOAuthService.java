@@ -27,8 +27,11 @@ public class GoogleOAuthService {
     @Value("${oauth.google.redirect-uri}")
     private String redirectUri;
 
-    private static final String GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
-    private static final String GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
+    @Value("${oauth.google.token-url}")
+    private String googleTokenUrl;
+
+    @Value("${oauth.google.userinfo-url}")
+    private String googleUserinfoUrl;
 
     public GoogleTokenResponse getAccessToken(String authorizationCode) {
         log.info("구글 Access Token 요청 - code: {}", authorizationCode);
@@ -42,7 +45,7 @@ public class GoogleOAuthService {
 
         try {
             GoogleTokenResponse response = restClient.post()
-                    .uri(GOOGLE_TOKEN_URL)
+                    .uri(googleTokenUrl)
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .body(params)
                     .retrieve()
@@ -53,7 +56,7 @@ public class GoogleOAuthService {
 
         } catch (Exception e) {
             log.error("구글 토큰 발급 실패: {}", e.getMessage());
-            throw new UnauthorizedException("구글 토큰 발급에 실패했습니다.");
+            throw new UnauthorizedException();
         }
     }
 
@@ -62,7 +65,7 @@ public class GoogleOAuthService {
 
         try {
             GoogleUserInfoResponse response = restClient.get()
-                    .uri(GOOGLE_USERINFO_URL)
+                    .uri(googleUserinfoUrl)
                     .header("Authorization", "Bearer " + accessToken)
                     .retrieve()
                     .body(GoogleUserInfoResponse.class);
@@ -72,7 +75,7 @@ public class GoogleOAuthService {
 
         } catch (Exception e) {
             log.error("구글 사용자 정보 조회 실패: {}", e.getMessage());
-            throw new UnauthorizedException("구글 사용자 정보 조회에 실패했습니다.");
+            throw new UnauthorizedException();
         }
     }
 }

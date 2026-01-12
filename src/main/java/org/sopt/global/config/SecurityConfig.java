@@ -39,7 +39,11 @@ public class SecurityConfig {
             "/api/auth/refresh",
 
             // 회원가입
-            "/api/members"
+            "/api/members",
+
+            // 게시글/댓글 조회
+            "/api/articles",
+            "/api/articles/**"
     };
 
     @Bean

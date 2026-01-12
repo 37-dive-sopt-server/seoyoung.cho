@@ -6,46 +6,43 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-
-import java.time.Instant;
-import java.util.Date;
-
 import org.sopt.global.exception.ExpiredTokenException;
 import org.sopt.global.exception.InvalidTokenException;
 import org.sopt.global.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Date;
+
 @Service
 public class JwtService {
 
     private final Algorithm algorithm;
-    private final long defaultExpiresInSeconds;
-    private static final long REFRESH_TOKEN_EXPIRES_IN_SECONDS = 1209600; // 14일
+    private final long accessTokenExpireSeconds;
+    private final long refreshTokenExpireSeconds;
 
     public JwtService(
-            @Value("${security.jwt.secret}") String secret,
-            @Value("${security.jwt.expires-in-seconds:3600}") long defaultExpiresInSeconds
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.access-token-expire-time}") long accessTokenExpireTime,
+            @Value("${jwt.refresh-token-expire-time}") long refreshTokenExpireTime
     ) {
         this.algorithm = Algorithm.HMAC256(secret);
-        this.defaultExpiresInSeconds = defaultExpiresInSeconds;
+        // 밀리초 → 초
+        this.accessTokenExpireSeconds = accessTokenExpireTime / 1000;
+        this.refreshTokenExpireSeconds = refreshTokenExpireTime / 1000;
     }
 
     public String generateAccessToken(Long memberId, String email) {
-        return generateToken(memberId, email, defaultExpiresInSeconds);
+        return generateToken(memberId, email, accessTokenExpireSeconds);
     }
 
     public String generateRefreshToken(Long memberId) {
-        return generateToken(memberId, null, REFRESH_TOKEN_EXPIRES_IN_SECONDS);
+        return generateToken(memberId, null, refreshTokenExpireSeconds);
     }
 
-    // 기본 만료 시간으로 JWT 토큰 생성
-    public String generateToken(Long memberId, String email) {
-        return generateToken(memberId, email, defaultExpiresInSeconds);
-    }
-
-    // 커스텀 만료 시간으로 JWT 토큰 생성
-    public String generateToken(Long memberId, String email, long expiresInSeconds) {
+    // JWT 토큰 생성
+    private String generateToken(Long memberId, String email, long expiresInSeconds) {
         Instant now = Instant.now();
         Instant exp = now.plusSeconds(expiresInSeconds);
 
@@ -64,11 +61,11 @@ public class JwtService {
 
     public String extractTokenFromHeader(String authorization) {
         if (authorization == null || authorization.isBlank()) {
-            throw new UnauthorizedException("Authorization 헤더가 없습니다.");
+            throw new UnauthorizedException();
         }
 
         if (!authorization.startsWith("Bearer ")) {
-            throw new UnauthorizedException("Bearer 토큰 형식이 아닙니다.");
+            throw new UnauthorizedException();
         }
 
         return authorization.substring("Bearer ".length()).trim();
@@ -83,27 +80,27 @@ public class JwtService {
             try {
                 return Long.parseLong(sub);
             } catch (NumberFormatException e) {
-                throw new InvalidTokenException("JWT의 회원 정보가 올바르지 않습니다.");
+                throw new InvalidTokenException();
             }
         } catch (TokenExpiredException e) {
-            throw new ExpiredTokenException("토큰이 만료되었습니다.");
+            throw new ExpiredTokenException();
         } catch (JWTVerificationException e) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
+            throw new InvalidTokenException();
         }
     }
 
     public String verifyAndGetEmail(String token) {
         if (token == null || token.isBlank()) {
-            throw new InvalidTokenException("토큰이 없습니다.");
+            throw new InvalidTokenException();
         }
 
         try {
             DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
             return jwt.getClaim("email").asString();
         } catch (TokenExpiredException e) {
-            throw new ExpiredTokenException("토큰이 만료되었습니다.");
+            throw new ExpiredTokenException();
         } catch (JWTVerificationException e) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
+            throw new InvalidTokenException();
         }
     }
 }

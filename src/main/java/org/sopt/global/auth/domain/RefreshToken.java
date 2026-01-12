@@ -11,7 +11,11 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "refresh_tokens")
+@Table(name = "refresh_tokens", indexes = {
+        @Index(name = "idx_refresh_token", columnList = "token", unique = true),
+        @Index(name = "idx_refresh_member_id", columnList = "memberId"),
+        @Index(name = "idx_refresh_expires_at", columnList = "expiresAt")
+})
 public class RefreshToken {
 
     @Id

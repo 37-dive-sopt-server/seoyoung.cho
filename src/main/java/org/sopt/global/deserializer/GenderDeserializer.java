@@ -3,7 +3,7 @@ package org.sopt.global.deserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import org.sopt.member.domain.Gender;
+import org.sopt.domain.member.domain.Gender;
 import org.sopt.global.exception.InvalidFormatException;
 
 import java.io.IOException;
